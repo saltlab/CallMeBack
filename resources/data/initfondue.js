@@ -1,0 +1,1 @@
+function foo(a) { return a * 2 }; foo(4)

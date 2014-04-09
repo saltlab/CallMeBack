@@ -1,0 +1,32 @@
+{
+	"name" : "roundtrace",
+	"description" : "collecting javascript execution traces",
+	"license" : "MIT",
+	"author" : "Keheliya Gallaba <keheliya.gallaba@gmail.com>",
+	"version" : "0.0.1",
+
+	"repository" : {
+		
+	},
+	"dependencies" : {
+		"falafel" : "0.1.4",
+		"falafel-map" : "0.3.2",
+		"esmorph" : "0.0.0-dev",
+		"connect" : "2.3.4",
+		"mime" : "1.2.4",
+		"http-proxy" : "0.8.7",
+		"harmon" : "0.2.0",
+		"fondue" :  "0.5.3"
+	},
+	"devDependencies" : {
+		"tap" : "0.4.x"
+	},
+	"keywords" : [
+		"source",
+		"trace",
+		"instrumentation"
+	],
+	"scripts" : {
+
+	}
+}
