@@ -11,7 +11,6 @@
 	"dependencies" : {
 		"falafel" : "0.1.4",
 		"falafel-map" : "0.3.2",
-		"esmorph" : "0.0.0-dev",
 		"connect" : "2.3.4",
 		"mime" : "1.2.4",
 		"http-proxy" : "0.8.7",

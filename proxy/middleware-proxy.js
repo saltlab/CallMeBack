@@ -85,7 +85,7 @@ module.exports = function (root, options) {
     }
 
     proxy.proxyRequest(req, res, {
-      port: 3000,
+      port: 8080,
       host: 'localhost',
       buffer: buffer
     });
@@ -96,7 +96,7 @@ proxy.on('proxyError', function (err, req, res) {
   res.writeHead(500, { 'Content-Type': 'text/plain' });
 
   if (req.method !== 'HEAD') {
-    res.write('An error has occurred (have you started a server on port 3000?): ' + JSON.stringify(err));
+    res.write('An error has occurred (have you started a server on port 8080?): ' + JSON.stringify(err));
   }
 
   try { res.end() }
