@@ -1,0 +1,151 @@
+Server Log (Scenario A - Start up and first client connecting)
+============
+
+[node-theseus] adding require() instrumentation hook
+[node-theseus] listening for WebSocket connections on port 8888
+[node-theseus] instrumenting/home/leelabminiopticon/dev/sample-apps/node-todo/server.js...
+[browser:undefined][server:1][global time:1398728785137 (server.js toplevel):toplevel
+[browser:undefined][server:2][global time:1398728785181 express:callsite
+[node-theseus] instrumenting/home/leelabminiopticon/dev/sample-apps/node-todo/config/database.js...
+[browser:undefined][server:3][global time:1398728785312 (database.js toplevel):toplevel
+[browser:undefined][server:4][global time:1398728785312 mongoose.connect:callsite
+[browser:undefined][server:5][global time:1398728785322 app.configure:callsite
+[browser:undefined][server:6][global time:1398728785323 ('configure' callback):function
+[browser:undefined][server:7][global time:1398728785324 express.static:callsite
+[browser:undefined][server:8][global time:1398728785324 app.use:callsite
+[browser:undefined][server:9][global time:1398728785327 express.logger:callsite
+[browser:undefined][server:10][global time:1398728785327 app.use:callsite
+[browser:undefined][server:11][global time:1398728785344 express.bodyParser:callsite
+connect.multipart() will be removed in connect 3.0
+visit https://github.com/senchalabs/connect/wiki/Connect-3.0 for alternatives
+connect.limit() will be removed in connect 3.0
+[browser:undefined][server:12][global time:1398728785345 app.use:callsite
+[browser:undefined][server:13][global time:1398728785346 express.methodOverride:callsite
+[browser:undefined][server:14][global time:1398728785347 app.use:callsite
+[node-theseus] instrumenting/home/leelabminiopticon/dev/sample-apps/node-todo/app/routes.js...
+[browser:undefined][server:15][global time:1398728785370 (routes.js toplevel):toplevel
+[node-theseus] instrumenting/home/leelabminiopticon/dev/sample-apps/node-todo/app/models/todo.js...
+[browser:undefined][server:16][global time:1398728785373 (todo.js toplevel):toplevel
+[browser:undefined][server:17][global time:1398728785374 mongoose.model:callsite
+[browser:undefined][server:18][global time:1398728785377 require('./app/routes.js'):callsite
+[browser:undefined][server:19][global time:1398728785377 undefined:function
+[browser:undefined][server:20][global time:1398728785377 app.get:callsite
+[browser:undefined][server:21][global time:1398728785378 app.post:callsite
+[browser:undefined][server:22][global time:1398728785378 app.delete:callsite
+[browser:undefined][server:23][global time:1398728785379 app.get:callsite
+[browser:undefined][server:24][global time:1398728785379 app.listen:callsite
+App listening on port 8080
+[browser:undefined][server:25][global time:1398728785380 console.log:callsite
+[browser:undefined][server:26][global time:1398728785380 [log]:function
+[browser:undefined][server:27][global time:1398728829864 ('get' callback):function
+[browser:19][server:28][global time:1398728829865 Todo.find:callsite
+[browser:19][server:29][global time:1398728829875 ('find' callback):function
+[browser:19][server:30][global time:1398728829876 res.json:callsite
+GET /api/todos 200 19ms - 401b
+[browser:19][server:31][global time:1398728830041 ('get' callback):function
+[browser:19][server:32][global time:1398728830042 res.sendfile:callsite
+GET /favicon.ico 200 3ms - 2.53kb
+[browser:19][server:33][global time:1398728830059 ('get' callback):function
+[browser:19][server:34][global time:1398728830061 res.sendfile:callsite
+GET /favicon.ico 200 6ms - 2.53kb
+
+
+Client Log (Scenario A - Start up and first client connecting)
+===================================================
+
+[browser:1][server:undefined][global time:1398728829515 (main.js toplevel):toplevel
+[browser:2][server:undefined][global time:1398728829519 angular.module:callsite
+
+[browser:3][server:undefined][global time:1398728829522 angular.module('todoController', [])
+
+	// inject the Todo service factory into our controller
+	.controller:callsite
+
+[browser:4][server:undefined][global time:1398728829545 (todos.js toplevel):toplevel
+[browser:5][server:undefined][global time:1398728829547 angular.module:callsite
+
+[browser:6][server:undefined][global time:1398728829549 angular.module('todoService', [])
+
+	// super simple service
+	// each function returns a promise object 
+	.factory:callsite
+
+[browser:7][server:undefined][global time:1398728829553 (core.js toplevel):toplevel
+[browser:8][server:undefined][global time:1398728829554 angular.module:callsite
+[browser:9][server:undefined][global time:1398728829556 nodeTodo.factory:callsite
+[browser:10][server:undefined][global time:1398728829559 nodeTodo.config:callsite
+[browser:11][server:undefined][global time:1398728829729 ('config' callback):function
+[browser:12][server:undefined][global time:1398728829730 $httpProvider.interceptors.push:callsite
+[browser:13][server:undefined][global time:1398728829735 ('factory' callback):function
+[browser:14][server:undefined][global time:1398728829754 ('factory' callback):function
+[browser:15][server:undefined][global time:1398728829760 ('controller' callback):function
+[browser:16][server:undefined][global time:1398728829761 Todos.get:callsite
+[browser:17][server:undefined][global time:1398728829762 get:function
+[browser:18][server:undefined][global time:1398728829763 $http.get:callsite
+[browser:19][server:undefined][global time:1398728829768 Todos.get()
+			.success:callsite
+GET http://localhost:48286/api/todos
+[browser:20][server:29][global time:1398728830011 ('success' callback):function
+
+
+
+Server Log (Scenario B - Adding an item to the TODO list)
+==================
+
+[browser:19][server:35][global time:1398729466094 ('post' callback):function
+[browser:25][server:36][global time:1398729466096 Todo.create:callsite
+[browser:25][server:37][global time:1398729466113 ('create' callback):function
+[browser:25][server:38][global time:1398729466113 Todo.find:callsite
+[browser:25][server:39][global time:1398729466116 ('find' callback):function
+[browser:25][server:40][global time:1398729466117 res.json:callsite
+POST /api/todos 200 30ms - 502b
+
+Client Log (Scenario B - Adding an item to the TODO list)
+==================
+
+[browser:21][server:29][global time:1398729466052 undefined:function
+[browser:22][server:29][global time:1398729466059 Todos.create:callsite
+[browser:23][server:29][global time:1398729466061 create:function
+[browser:24][server:29][global time:1398729466062 $http.post:callsite
+
+[browser:25][server:29][global time:1398729466068 Todos.create($scope.formData)
+
+					// if successful creation, call our get function to get all the new todos
+					.success:callsite
+
+POST http://localhost:48286/api/todos
+	
+[browser:26][server:39][global time:1398729466148 ('success' callback):function
+
+
+
+
+Server Log (Scenario C - Deleting an item from the TODO list)
+================
+
+[browser:25][server:41][global time:1398729554701 ('delete' callback):function
+[browser:31][server:42][global time:1398729554703 Todo.remove:callsite
+[browser:31][server:43][global time:1398729554707 ('remove' callback):function
+[browser:31][server:44][global time:1398729554707 Todo.find:callsite
+[browser:31][server:45][global time:1398729554711 ('find' callback):function
+[browser:31][server:46][global time:1398729554712 res.json:callsite
+DELETE /api/todos/535eeafaed6602bf4c000001 200 12ms - 401b
+
+
+
+Client Log (Scenario C - Deleting an item from the TODO list)
+==================
+
+[browser:27][server:39][global time:1398729554670 undefined:function
+[browser:28][server:39][global time:1398729554677 Todos.delete:callsite
+[browser:29][server:39][global time:1398729554678 delete:function
+[browser:30][server:39][global time:1398729554680 $http.delete:callsite
+
+[browser:31][server:39][global time:1398729554686 Todos.delete(id)
+				// if successful creation, call our get function to get all the new todos
+				.success:callsite
+
+DELETE http://localhost:48286/api/todos/535eeafaed6602bf4c000001
+
+[browser:32][server:45][global time:1398729554735 ('success' callback):function
+
