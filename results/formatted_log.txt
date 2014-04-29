@@ -1,0 +1,174 @@
+1398799504056 : (server.js toplevel) : toplevel
+server {"browser":0, "server":1}
+1398799504101 : express : callsite
+server {"browser":0, "server":2}
+1398799504235 : (database.js toplevel) : toplevel
+server {"browser":0, "server":3}
+1398799504236 : mongoose.connect : callsite
+server {"browser":0, "server":4}
+1398799504242 : app.configure : callsite
+server {"browser":0, "server":5}
+1398799504242 : ('configure' callback) : function
+server {"browser":0, "server":6}
+1398799504242 : express.static : callsite
+server {"browser":0, "server":7}
+1398799504243 : app.use : callsite
+server {"browser":0, "server":8}
+1398799504244 : express.logger : callsite
+server {"browser":0, "server":9}
+1398799504244 : app.use : callsite
+server {"browser":0, "server":10}
+1398799504262 : express.bodyParser : callsite
+server {"browser":0, "server":11}
+1398799504263 : app.use : callsite
+server {"browser":0, "server":12}
+1398799504264 : express.methodOverride : callsite
+server {"browser":0, "server":13}
+1398799504264 : app.use : callsite
+server {"browser":0, "server":14}
+1398799504287 : (routes.js toplevel) : toplevel
+server {"browser":0, "server":15}
+1398799504290 : (todo.js toplevel) : toplevel
+server {"browser":0, "server":16}
+1398799504291 : mongoose.model : callsite
+server {"browser":0, "server":17}
+1398799504294 : require('./app/routes.js') : callsite
+server {"browser":0, "server":18}
+1398799504294 : undefined : function
+server {"browser":0, "server":19}
+1398799504295 : app.get : callsite
+server {"browser":0, "server":20}
+1398799504296 : app.post : callsite
+server {"browser":0, "server":21}
+1398799504296 : app.delete : callsite
+server {"browser":0, "server":22}
+1398799504296 : app.get : callsite
+server {"browser":0, "server":23}
+1398799504296 : app.listen : callsite
+server {"browser":0, "server":24}
+1398799504298 : console.log : callsite
+server {"browser":0, "server":25}
+1398799504298 : [log] : function
+server {"browser":0, "server":26}
+1398799548381 : ('get' callback) : function
+server {"browser":0, "server":27}
+1398799548382 : Todo.find : callsite
+server {"browser":19, "server":28}
+1398799548458 : ('find' callback) : function
+server {"browser":19, "server":29}
+1398799548458 : res.json : callsite
+server {"browser":19, "server":30}
+1398799548741 : ('get' callback) : function
+server {"browser":19, "server":31}
+1398799548741 : res.sendfile : callsite
+server {"browser":19, "server":32}
+1398799548822 : ('get' callback) : function
+server {"browser":19, "server":33}
+1398799548823 : res.sendfile : callsite
+server {"browser":19, "server":34}
+
+1398799548009 : (main.js toplevel) : toplevel
+browser {"browser":1, "server":0}
+1398799548014 : angular.module : callsite
+browser {"browser":2, "server":0}
+1398799548018 : angular.module('todoController', []).controller:callsite
+browser {"browser":3, "server":0}
+1398799548023 : (todos.js toplevel) : toplevel
+browser {"browser":4, "server":0}
+1398799548025 : angular.module : callsite
+browser {"browser":5, "server":0}
+1398799548029 : angular.module('todoService', []).factory:callsite
+browser {"browser":6, "server":0}
+1398799548033 : (core.js toplevel) : toplevel
+browser {"browser":7, "server":0}
+1398799548035 : angular.module : callsite
+browser {"browser":8, "server":0}
+1398799548039 : nodeTodo.factory : callsite
+browser {"browser":9, "server":0}
+1398799548042 : nodeTodo.config : callsite
+browser {"browser":10, "server":0}
+1398799548214 : ('config' callback) : function
+browser {"browser":11, "server":0}
+1398799548217 : $httpProvider.interceptors.push : callsite
+browser {"browser":12, "server":0}
+1398799548223 : ('factory' callback) : function
+browser {"browser":13, "server":0}
+1398799548244 : ('factory' callback) : function
+browser {"browser":14, "server":0}
+1398799548251 : ('controller' callback) : function
+browser {"browser":15, "server":0}
+1398799548253 : Todos.get : callsite
+browser {"browser":16, "server":0}
+1398799548254 : get : function
+browser {"browser":17, "server":0}
+1398799548255 : $http.get : callsite
+browser {"browser":18, "server":0}
+1398799548259 : Todos.get().success:callsite
+browser {"browser":19, "server":0}
+1398799548724 : ('success' callback) : function
+browser {"browser":20, "server":29}
+
+
+
+---------------------------------------------------
+
+1398800530521 : ('post' callback) : function
+server {"browser":19, "server":35}
+1398800530521 : Todo.create : callsite
+server {"browser":25, "server":36}
+1398800530529 : ('create' callback) : function
+server {"browser":25, "server":37}
+1398800530529 : Todo.find : callsite
+server {"browser":25, "server":38}
+1398800530531 : ('find' callback) : function
+server {"browser":25, "server":39}
+1398800530531 : res.json : callsite
+server {"browser":25, "server":40}
+
+
+1398800530461 : undefined : function
+browser {"browser":21, "server":29}
+1398800530472 : Todos.create : callsite
+browser {"browser":22, "server":29}
+1398800530475 : create : function
+browser {"browser":23, "server":29}
+1398800530478 : $http.post : callsite
+browser {"browser":24, "server":29}
+1398800530485 : Todos.create($scope.formData).success : callsite
+browser {"browser":25, "server":29}
+1398800530583 : ('success' callback) : function
+browser {"browser":26, "server":39}
+
+
+
+
+-------------------------
+
+
+1398800634429 : ('delete' callback) : function
+server {"browser":25, "server":41}
+1398800634431 : Todo.remove : callsite
+server {"browser":31, "server":42}
+1398800634436 : ('remove' callback) : function
+server {"browser":31, "server":43}
+1398800634437 : Todo.find : callsite
+server {"browser":31, "server":44}
+1398800634439 : ('find' callback) : function
+server {"browser":31, "server":45}
+1398800634440 : res.json : callsite
+server {"browser":31, "server":46}
+
+
+
+1398800634387 : undefined : function
+browser {"browser":27, "server":39}
+1398800634399 : Todos.delete : callsite
+browser {"browser":28, "server":39}
+1398800634402 : delete : function
+browser {"browser":29, "server":39}
+1398800634405 : $http.delete : callsite
+browser {"browser":30, "server":39}
+1398800634412 : Todos.delete(id).success : callsite
+browser {"browser":31, "server":39}
+1398800634480 : ('success' callback) : function
+browser {"browser":32, "server":45}
