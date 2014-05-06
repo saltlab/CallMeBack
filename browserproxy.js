@@ -5,7 +5,9 @@ fs               = require('fs'),
 http             = require('http'),
 proxyMiddleware  = require('./proxy/middleware-proxy'),
 staticMiddleware = require('./proxy/middleware-static'),
-url              = require('url');
+url              = require('url'),
+util    = require('util'),
+WebSocketServer  = require('ws').Server;
 
 var STATIC_CACHE_MAX_AGE = 5000; // 5 seconds
 
@@ -25,6 +27,9 @@ var STATIC_CACHE_MAX_AGE = 5000; // 5 seconds
 
     // MD5 -> instrumented file
     var _instrumentedFileCache = {};
+
+    // web socket server
+    var server;
 
 function _instrument(src, options) {
 	var charPerLine = src.length / src.split("\n").length;
@@ -170,9 +175,53 @@ function _createServer(path, modeName, pathExcludeRegexp, createCompleteCallback
         });
     }
 
-    _createServer(null, "proxy", null, serverHandler);
+    function _browserlisten (port) {
+    if (server) {
+        return;
+    }
+
+    console.log('listening for WebSocket connections on port '+ port);
+
+
+    server = new WebSocketServer({ port: port });
+    server.on('error', socketError);
+    server.on('connection', socketConnected);
+}
 
     function serverHandler(data,server) {
     	var address = server.address();
     	console.log('Proxy running on:'+address.address+':'+address.port);
     }
+
+    function socketConnected(client) {
+    
+    console.log('browser connected');
+
+    client.on('message', function (data) {
+        console.save(data);
+    });
+
+    client.on('close', function () {
+        console.log('debugger disconnected');        
+    });
+}
+
+function socketError(err) {
+    console.error('socket error: ' + err);
+}
+
+var currentdate = new Date(); 
+var date_string = currentdate.getDate() + "_"
+                + (currentdate.getMonth()+1)  + "_" 
+                + currentdate.getFullYear();
+var log_file = fs.createWriteStream(__dirname + '/'+date_string+'_browser.log', {flags : 'a'});
+var log_stdout = process.stdout;
+
+console.save = function(d) { //
+  log_file.write(util.format(d) + '\n');
+  log_stdout.write(util.format(d) + '\n');
+};
+
+
+_createServer(null, "proxy", null, serverHandler);
+_browserlisten(7777);

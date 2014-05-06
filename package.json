@@ -15,6 +15,7 @@
 		"mime" : "1.2.4",
 		"http-proxy" : "0.8.7",
 		"harmon" : "0.2.0",
+		"ws" : "0.4.x",
 		"fondue" :  "0.5.3"
 	},
 	"devDependencies" : {
