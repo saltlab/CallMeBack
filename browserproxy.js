@@ -223,5 +223,5 @@ console.save = function(d) { //
 };
 
 
-_createServer(null, "proxy", null, serverHandler);
+_createServer(null, "proxy", /q\.js/, serverHandler);
 _browserlisten(7777);
