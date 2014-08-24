@@ -1,0 +1,148 @@
+<html>
+<head>
+	<title>RoundTrace Runner</title>
+	<style>
+		#convert-button {
+			display: block;
+			clear: both;
+			float:right;
+		}
+		#editor { 
+			position: absolute;
+			top: 10%;
+			height: 100%;
+			left: 0;
+			left: 60%;
+			width: 40%;
+		}
+		#svg {
+			position: absolute;
+			top: 0;
+			height: 100%;
+			width: 100%;
+		}
+		svg {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>	
+<!-- 	<div><button id="convert-button">Convert!</button></div> -->	
+	<div id='svg'>
+		<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><path fill="none" stroke="#000" stroke-width="16" d="M9,89a81,81 0 1,1 0,2zm51-14c0-13 1-19 8-26c7-9 18-10 28-8c10,2 22,12 22,26c0,14-11,19-15,22c-3,3-5,6-5,9v22m0,12v16"/></svg>
+	</div>
+<!-- 	<div id="editor">
+		function getData (args, cb) {
+		cb('something happened');
+		setTimeout(cb,100);
+	}
+
+	render = function (params) {
+	console.log(params);
+}
+
+getData(null,render);
+getData('students', render);
+</div> -->
+
+
+<script src="ace.js" type="text/javascript"></script> 
+<script src="viz.js" type="text/javascript"></script>
+<script src="svg-pan-zoom.js" type="text/javascript"></script>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+	d3.text('api/graph', function(_, dot) {
+
+		var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><path fill="none" stroke="#000" stroke-width="16" d="M9,89a81,81 0 1,1 0,2zm51-14c0-13 1-19 8-26c7-9 18-10 28-8c10,2 22,12 22,26c0,14-11,19-15,22c-3,3-5,6-5,9v22m0,12v16"/></svg>';
+		try {
+			var svg = Viz(dot, "svg", "dot");
+		}
+		catch(err) {
+		}
+		document.getElementById('svg').innerHTML = svg;
+		var mysvg = document.getElementsByTagName('svg')[0];
+		mysvg.id = 'mysvg';
+		svgPanZoom('#mysvg', {
+			zoomEnabled: true,
+			maxZoom: 1000,
+			controlIconsEnabled: true
+		});
+
+	});
+
+	var editor = ace.edit("editor");
+	editor.setTheme("ace/theme/chrome");
+	editor.getSession().setMode("ace/mode/dot");
+
+	function convert() {
+		var source = editor.getSession().getValue();
+		if (source.length == 0) {
+			return;
+		}
+
+		var xmlhttp;
+
+		if (window.XMLHttpRequest) {
+		// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp = new XMLHttpRequest();
+		} else {
+		// code for IE6, IE5
+		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 ) {
+			if(xmlhttp.status == 200){
+				document.getElementById("myDiv").innerHTML = xmlhttp.responseText;
+			}
+			else if(xmlhttp.status == 400) {
+				alert('There was an error 400')
+			}
+			else {
+				alert('something else other than 200 was returned')
+			}
+		}
+	}
+
+	xmlhttp.open("GET", "ajax_info.txt", true);
+	xmlhttp.send();
+}
+
+document.getElementById("convert-button").addEventListener("click", convert);
+
+			// loadSvgStep.oldValue = 'a';
+			// loadSvgStep.loaded = false;
+			// function loadSvgStep() {
+			// 	var newValue = editor.getSession().getValue();
+			// 	if (newValue==loadSvgStep.oldValue && !loadSvgStep.loaded) {
+			// 		loadSvg();
+			// 		loadSvgStep.loaded=true;
+			// 	}
+			// 	if (newValue!=loadSvgStep.oldValue) {
+			// 		loadSvgStep.loaded=false;
+			// 	}
+			// 	loadSvgStep.oldValue = newValue;
+			// }
+			// function loadSvg() {
+			// 	var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><path fill="none" stroke="#000" stroke-width="16" d="M9,89a81,81 0 1,1 0,2zm51-14c0-13 1-19 8-26c7-9 18-10 28-8c10,2 22,12 22,26c0,14-11,19-15,22c-3,3-5,6-5,9v22m0,12v16"/></svg>';
+			// 	try {
+			// 		var svg = Viz(dig, "svg", "dot");
+			// 	}
+			// 	catch(err) {
+			// 	}
+			// 	document.getElementById('svg').innerHTML = svg;
+			// 	var mysvg = document.getElementsByTagName('svg')[0];
+			// 	mysvg.id = 'mysvg';
+			// 	svgPanZoom('#mysvg', {
+			// 		zoomEnabled: true,
+			// 		maxZoom: 1000,
+			// 		controlIconsEnabled: true
+			// 	});
+			// }
+			//setInterval(loadSvgStep, 1000);
+		</script>
+	</body>
+	</html>

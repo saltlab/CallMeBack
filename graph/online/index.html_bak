@@ -1,0 +1,112 @@
+<html>
+	<head>
+		<title>Graphviz Runner</title>
+		<style>
+			#editor { 
+				position: absolute;
+				top: 0;
+				height: 100%;
+				left: 0;
+				width: 40%;
+			}
+			#svg {
+				position: absolute;
+				top: 0;
+				height: 100%;
+				left: 40%;
+				width: 60%;
+			}
+			svg {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="editor">/*
+ * Hi, I Frankensteined this tool. Basically it's three different javascript
+ *    tools, put together. Mind you, this runs ENTIRELY in javascript, and no
+ *    data is EVER transmitted to me or any other server. This file is licensed
+ *    as beer-ware, feel free to use it any way you like. The tools used have
+ *    different licenses and requirements, check them out.
+ * The first tool is Viz.js (https://github.com/mdaines/viz.js), which is
+ *    Graphviz compiled for javascript - cool stuff.
+ * Second is the Ace editor (http://ace.c9.io/), that's the javascript code
+ *    editor you see right here.
+ * Finally svg-pan-zoom (https://github.com/ariutta/svg-pan-zoom), that makes
+ *    SVG (the bit on the right) zoomable and panable.
+ * The example below is stolen from http://www.graphviz.org/content/cluster.
+ */
+
+digraph G {
+
+	subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+		a0 -> a1 -> a2 -> a3;
+		label = "process #1";
+	}
+
+	subgraph cluster_1 {
+		node [style=filled];
+		b0 -> b1 -> b2 -> b3;
+		label = "process #2";
+		color=blue
+	}
+	start -> a0;
+	start -> b0;
+	a1 -> b3;
+	b2 -> a3;
+	a3 -> a0;
+	a3 -> end;
+	b3 -> end;
+
+	start [shape=Mdiamond];
+	end [shape=Msquare];
+}</div>
+		<div id='svg'>
+			<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><path fill="none" stroke="#000" stroke-width="16" d="M9,89a81,81 0 1,1 0,2zm51-14c0-13 1-19 8-26c7-9 18-10 28-8c10,2 22,12 22,26c0,14-11,19-15,22c-3,3-5,6-5,9v22m0,12v16"/></svg>
+		</div>
+    
+		<script src="ace.js" type="text/javascript"></script>
+		<script src="viz.js" type="text/javascript"></script>
+		<script src="svg-pan-zoom.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			var editor = ace.edit("editor");
+			editor.setTheme("ace/theme/chrome");
+			editor.getSession().setMode("ace/mode/dot");
+
+			loadSvgStep.oldValue = 'a';
+			loadSvgStep.loaded = false;
+			function loadSvgStep() {
+				var newValue = editor.getSession().getValue();
+				if (newValue==loadSvgStep.oldValue && !loadSvgStep.loaded) {
+					loadSvg();
+					loadSvgStep.loaded=true;
+				}
+				if (newValue!=loadSvgStep.oldValue) {
+					loadSvgStep.loaded=false;
+				}
+				loadSvgStep.oldValue = newValue;
+			}
+			function loadSvg() {
+				var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><path fill="none" stroke="#000" stroke-width="16" d="M9,89a81,81 0 1,1 0,2zm51-14c0-13 1-19 8-26c7-9 18-10 28-8c10,2 22,12 22,26c0,14-11,19-15,22c-3,3-5,6-5,9v22m0,12v16"/></svg>';
+				try {
+					var svg = Viz(editor.getSession().getValue(), "svg", "dot");
+				}
+				catch(err) {
+				}
+				document.getElementById('svg').innerHTML = svg;
+				var mysvg = document.getElementsByTagName('svg')[0];
+				mysvg.id = 'mysvg';
+				svgPanZoom('#mysvg', {
+					zoomEnabled: true,
+					maxZoom: 1000,
+					controlIconsEnabled: true
+				});
+			}
+			setInterval(loadSvgStep, 1000);
+		</script>
+	</body>
+</html>

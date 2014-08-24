@@ -1,32 +1,34 @@
 {
-	"name" : "roundtrace",
-	"description" : "collecting javascript execution traces",
-	"license" : "MIT",
-	"author" : "Keheliya Gallaba <keheliya.gallaba@gmail.com>",
-	"version" : "0.0.1",
-
-	"repository" : {
-		
-	},
-	"dependencies" : {
-		"falafel" : "0.1.4",
-		"falafel-map" : "0.3.2",
-		"connect" : "2.3.4",
-		"mime" : "1.2.4",
-		"http-proxy" : "0.8.7",
-		"harmon" : "0.2.0",
-		"ws" : "0.4.x",
-		"fondue" :  "0.5.3"
-	},
-	"devDependencies" : {
-		"tap" : "0.4.x"
-	},
-	"keywords" : [
-		"source",
-		"trace",
-		"instrumentation"
-	],
-	"scripts" : {
-
-	}
+  "name": "roundtrace",
+  "description": "collecting javascript execution traces",
+  "license": "MIT",
+  "author": "Keheliya Gallaba <keheliya.gallaba@gmail.com>",
+  "version": "0.0.1",
+  "repository": {},
+  "dependencies": {
+    "falafel": "0.1.4",
+    "falafel-map": "0.3.2",
+    "connect": "2.3.4",
+    "mime": "1.2.4",
+    "http-proxy": "0.8.7",
+    "harmon": "0.2.0",
+    "ws": "0.4.x",
+    "fondue": "0.5.3",
+    "esprima": "~1.2.2",
+    "estraverse": "~1.5.1",
+    "argparse": "~0.1.15",
+    "graphlib": "~0.7.4",
+    "graphlib-dot": "~0.4.10",
+    "express": "~4.8.5",
+    "morgan": "~1.2.3"
+  },
+  "devDependencies": {
+    "tap": "0.4.x"
+  },
+  "keywords": [
+    "source",
+    "trace",
+    "instrumentation"
+  ],
+  "scripts": {}
 }

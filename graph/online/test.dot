@@ -1,0 +1,37 @@
+digraph {
+    subgraph clustersys {
+        label=system;
+        Window_prototype_setTimeout [shape=point]
+        console_log [shape=point]
+    }
+    subgraph "clusterFunctionDeclaration-1-0-4-1" {
+        label=getData;
+        paras="[{\"name\":\"args\",\"start\":{\"line\":1,\"column\":18},\"end\":{\"line\":1,\"column\":22}},{\"name\":\"cb\",\"start\":{\"line\":1,\"column\":24},\"end\":{\"line\":1,\"column\":26}}]";
+        fd1e0 [shape=point]
+        fd1e1 [shape=point]
+        fd1e2 [shape=point]
+    }
+    subgraph "clusterFunctionExpression-6-9-8-1" {
+        label=render;
+        paras="[{\"name\":\"params\",\"start\":{\"line\":6,\"column\":19},\"end\":{\"line\":6,\"column\":25}}]";
+        "912f0" [shape=point]
+        "912f1" [shape=point]
+    }
+    subgraph "clusterProgram-1-0-11-28" {
+        label=Program;
+        c2b10 [shape=point]
+        c2b11 [shape=point]
+        c2b12 [shape=point]
+    }
+    fd1e0 -> fd1e1 [label="CallExpression-2-1-2-25"]
+    fd1e1 -> fd1e2 [label="CallExpression-3-1-3-19"]
+    "912f0" -> "912f1" [label="CallExpression-7-1-7-20"]
+    c2b10 -> c2b11 [label="CallExpression-10-0-10-20"]
+    c2b11 -> c2b12 [label="CallExpression-11-0-11-27"]
+    fd1e0 -> "912f0" [color=red]
+    fd1e1 -> Window_prototype_setTimeout [color=red,label=Window_prototype_setTimeout]
+    "912f0" -> console_log [color=red,label=console_log]
+    c2b10 -> fd1e0 [color=red]
+    c2b11 -> fd1e0 [color=red]
+}
+
