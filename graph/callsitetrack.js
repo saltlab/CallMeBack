@@ -76,10 +76,6 @@ estraverse.traverse(ast, {
 	leave: leave
 });
 
-
-// cfg = esgraph(ast);
-// console.dir(cfg);
-
 function enter(node){
 
 	if (node.type === 'BlockStatement' || node.type === 'Program'){
@@ -98,8 +94,6 @@ function enter(node){
 		currentBlock.push(node);
 	}
 }
-
-
 
 function leave(node){
 
@@ -322,5 +316,5 @@ cg.edges.iter(function (call, fn) {
 	}
 });
 
-//console.log(g);
+console.dir(g);
 console.log(dot.write(g));
