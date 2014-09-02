@@ -44,22 +44,32 @@ var tempgraph = {};
 
 var functions = [];
 
-falafel({ source: src,
-    loc: true
-}, function (node) {
+
+estraverse.traverse(ast, {
+    enter: enter
+});
+
+function enter(node) {
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration') {
         functions.push(node);
     }
 
-    if (node.type === 'Program' || node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration') {
-
-
-    }
-
-    if (node.type === 'BlockStatement' || node.type === 'IfStatement') {
+    if (node.type === 'CallExpression') {
+        node.$gnode = g.addNode(utils.makeId(node.type, node.loc));
 
     }
-});
+
+    if (node.type === 'BlockStatement' || node.type === 'Program') {
+        backToFront(node.body);
+    }
+    if (node.type === 'SwitchCase' ) {
+        backToFront(node.consequent);
+    }
+    if (node.type === 'SwitchStatement') {
+        backToFront(node.cases);
+    }
+};
+
 
 
 functions.concat(ast).forEach(function (a, i) {
@@ -82,14 +92,38 @@ functions.concat(ast).forEach(function (a, i) {
 
 
     function enter(b) {
-  //      console.log("entering  a >>>>" + utils.makeId(b.type, b.loc));
+        console.log("enter " + utils.makeId(b.type, b.loc));
+
         if (b.type === 'FunctionExpression' || b.type === 'FunctionDeclaration') {
             this.skip();
         }
 
-        if (b.type === 'ExpressionStatement') {
- //           console.log(">>>>" + utils.makeId(b.type, b.loc));
+        else if (b.type === 'ExpressionStatement') {
             buildGraphFromExpr(b.expression);
+        }
+        else if (b.type === 'IfStatement') {
+            buildGraphFromExpr(b.test);
+        }
+        else if (b.type === 'DoWhileStatement' || b.type === 'WhileStatement') {
+            buildGraphFromExpr(b.test);
+        }
+        else if (b.type === 'ForStatement') {
+            if (b.init){
+                buildGraphFromExpr(b.init);
+            }
+            if (b.test){
+                buildGraphFromExpr(b.test);
+            }
+            if (b.update){
+                buildGraphFromExpr(b.update);
+            }
+        }
+        else if (b.type === 'SwitchStatement') {
+            console.log(b);
+            buildGraphFromExpr(b.discriminant);
+        }
+        else if (b.type === 'ReturnStatement') {
+            buildGraphFromExpr(b.argument);
         }
     }
 
@@ -97,6 +131,7 @@ functions.concat(ast).forEach(function (a, i) {
 
 
 function buildGraphFromExpr(astXNode) {
+    console.log("buiding from " + utils.makeId(astXNode.type, astXNode.loc));
     var callExprs = [];
 
     estraverse.traverse(astXNode, {
@@ -109,15 +144,13 @@ function buildGraphFromExpr(astXNode) {
         if (b.type === 'FunctionExpression') {
             this.skip();
         }
-    }
+    };
 
     function leave(c) {
         if (c.type == 'CallExpression') {
-  //          console.log(utils.makeId(c.type, c.loc));
             callExprs.push(c);
-            c.$gnode = g.addNode(utils.makeId(c.type, c.loc));
         }
-    }
+    };
 
     for (var i = 0; i < (callExprs.length) - 1; i++) {
         var currentNode = callExprs[i];
@@ -130,6 +163,38 @@ function buildGraphFromExpr(astXNode) {
 
 
 console.log(dot.write(g));
+
+function backToFront(list) {
+    // link all the children to the next sibling from back to front,
+    // so the nodes already have .nextSibling
+    // set when their getEntry is called
+    for (var i = list.length - 1; i >= 0; i--) {
+        var child = list[i];
+        if (i < list.length - 1)
+            child.$nextSibling = list[i + 1];
+    }
+}
+
+function linkSiblings(astNode) {
+
+
+
+    function BlockOrProgram(node, recurse) {
+        backToFront(node.body, recurse);
+    }
+    walker(astNode, {
+        BlockStatement: BlockOrProgram,
+        Program: BlockOrProgram,
+        FunctionDeclaration: function () {},
+        FunctionExpression: function () {},
+        SwitchCase: function (node, recurse) {
+            backToFront(node.consequent, recurse);
+        },
+        SwitchStatement: function (node, recurse) {
+            backToFront(node.cases, recurse);
+        },
+    });
+}
 
 
 var continueTargets = [
