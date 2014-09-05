@@ -58,7 +58,9 @@ function enter(node) {
     }
 
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'Program') {
+        node.$gnode = g.addNode('cluster'+utils.makeId(node.type, node.loc));
         var exitid = g.addNode(utils.makeId(node.type, node.loc)+'-exit');
+        g.parent(exitid, node.$gnode);
         node.$exitnode = {
             start:exitid,
             end:exitid
@@ -69,6 +71,7 @@ function enter(node) {
         node.type === 'WhileStatement' || node.type === 'ForStatement' || node.type === 'DoWhileStatement' ||
         node.type === 'SwitchStatement' || node.type === 'ReturnStatement') {
         node.$gnode = g.addNode(utils.makeId(node.type, node.loc));
+        g.parent(node.$gnode, getEnclosingFunction(node).$gnode);
 
     }
 
