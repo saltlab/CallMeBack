@@ -42,22 +42,13 @@ var successorMap = {};
 var tempgraph = {};
 
 var functions = [];
+var nodeEntries = {};
+var nextSibling = {};
 
 
 estraverse.traverse(ast, {
-    enter: enter,
-    leave: leave
+    enter: enter
 });
-
-function leave (node) {
-    if (node.type === 'ExpressionStatement') {
-        if(!node.expression.right || node.expression.right.type !== 'FunctionExpression' )
-        {
-            //connectNext(node);
-            console.log(node.$entry)
-        }
-    }
-}
 
 function enter(node) {
     setParent(node);
@@ -67,7 +58,11 @@ function enter(node) {
     }
 
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'Program') {
-        node.$exitnode = g.addNode(utils.makeId(node.type, node.loc)+'-exit');
+        var exitid = g.addNode(utils.makeId(node.type, node.loc)+'-exit');
+        node.$exitnode = {
+            start:exitid,
+            end:exitid
+        }
     }
 
     if (node.type === 'CallExpression' || node.type === 'IfStatement' || node.type === 'DoWhileStatement' ||
@@ -77,22 +72,10 @@ function enter(node) {
 
     }
 
-    if (node.type === 'BlockStatement' || node.type === 'Program') {
-        backToFront(node.body);
-    }
-    if (node.type === 'SwitchCase' ) {
-        backToFront(node.consequent);
-    }
-    if (node.type === 'SwitchStatement') {
-        backToFront(node.cases);
-    }
 };
 
-
-
 functions.concat(ast).forEach(function (a, i) {
- //   console.log("*****" + utils.makeId(a.type, a.loc));
-    //   console.log(node);
+
     if (!Array.isArray(a.body)) {
         estraverse.traverse(a.body, {
             enter: enter
@@ -108,24 +91,28 @@ functions.concat(ast).forEach(function (a, i) {
 
 
     function enter(b) {
-//        console.log("enter " + utils.makeId(b.type, b.loc));
 
         if (b.type === 'FunctionExpression' || b.type === 'FunctionDeclaration') {
             this.skip();
         }
 
         else if (b.type === 'ExpressionStatement') {
-            b.$entry = buildGraphFromExpr(b.expression);
+            var result = buildGraphFromExpr(b.expression);
+            if (result){
+                nodeEntries[fullID(b)] = result;
+            }
         }
         else if (b.type === 'IfStatement') {
-            b.$entry = buildGraphFromExpr(b.test);
-            if (b.$entry){
-                connectNodes(b.$entry.end,b.$gnode);
-                b.$entry.end = b.$gnode;
+            nodeEntries[fullID(b)] = buildGraphFromExpr(b.test);
+            if (nodeEntries[fullID(b)]){
+                connectNodes(nodeEntries[fullID(b)].end,b.$gnode);
+                nodeEntries[fullID(b)].end = b.$gnode;
             } else {
-                b.$entry.start = b.$gnode;
-                b.$entry.end = b.$gnode;
+                nodeEntries[fullID(b)].start = b.$gnode;
+                nodeEntries[fullID(b)].end = b.$gnode;
             }
+            //console.log('*********')
+            //console.dir(nodeEntries)
         }
         else if (b.type === 'DoWhileStatement' || b.type === 'WhileStatement') {
 // TODO
@@ -176,18 +163,36 @@ functions.concat(ast).forEach(function (a, i) {
             b.$entry = buildGraphFromExpr(b.discriminant);
         }
         else if (b.type === 'ReturnStatement') {
-            b.$entry = buildGraphFromExpr(b.argument);
-            if (b.$entry){
-                connectNodes(b.$entry.end,b.$gnode);
-                b.$entry.end = b.$gnode;
+            nodeEntries[fullID(b)] = buildGraphFromExpr(b.argument);
+            if (nodeEntries[fullID(b)]){
+                connectNodes(nodeEntries[fullID(b)].end,b.$gnode);
+                nodeEntries[fullID(b)].end = b.$gnode;
             } else {
-                b.$entry.start = b.$gnode;
-                b.$entry.end = b.$gnode;
+                nodeEntries[fullID(b)].start = b.$gnode;
+                nodeEntries[fullID(b)].end = b.$gnode;
             }
         }
     }
 
 });
+
+estraverse.traverse(ast, {
+    enter: linkSiblings
+});
+
+function linkSiblings(node) {
+
+    if (node.type === 'BlockStatement' || node.type === 'Program') {
+        backToFront(node.body);
+    }
+    if (node.type === 'SwitchCase' ) {
+        backToFront(node.consequent);
+    }
+    if (node.type === 'SwitchStatement') {
+        backToFront(node.cases);
+    }
+};
+
 
 function connectNodes(a,b) {
     if (a && b) {
@@ -198,8 +203,9 @@ function connectNodes(a,b) {
 }
 
 function connectNext(a) {
-    console.log(a);
-    return g.addEdge(null, a.$entry.end.toString(), getSuccessor(a).start.toString());
+   if(nodeEntries[fullID(a)]) {
+       g.addEdge(null, nodeEntries[fullID(a)].end.toString(), getSuccessor(a).start.toString());
+   }
 }
 
 function buildGraphFromExpr(astXNode) {
@@ -239,12 +245,37 @@ function buildGraphFromExpr(astXNode) {
         end = successor.$gnode;
         g.addEdge(null, currentNode.$gnode.toString(), successor.$gnode.toString());
     }
-    return {
-        start: start,
-        end: end
-    }
+    if (start || end ){
+        return {
+            start: start,
+            end: end
+        }
+    } else return;
+
 }
 
+estraverse.traverse(ast, {
+    enter: reEnter
+});
+
+function reEnter (node) {
+    if (node.type === 'ExpressionStatement') {
+        if(!node.expression.right || node.expression.right.type !== 'FunctionExpression' )
+        {
+            connectNext(node);
+        }
+    } else if (node.type === 'ReturnStatement') {
+        connectNodes(nodeEntries[fullID(node)].end,getExitNode(node).start);
+    } else if (node.type === 'IfStatement') {
+        connectNodes(nodeEntries[fullID(node)].end, getEntry(node.consequent).start)
+        if (node.alternate) {
+            connectNodes(nodeEntries[fullID(node)].end, getEntry(node.alternate).start)
+        } else {
+            connectNodes(nodeEntries[fullID(node)].end, getSuccessor(node).start)
+        }
+
+    }
+}
 
 console.log(dot.write(g));
 
@@ -252,11 +283,16 @@ function backToFront(list) {
     // link all the children to the next sibling from back to front,
     // so the nodes already have .nextSibling
     // set when their getEntry is called
+
     for (var i = list.length - 1; i >= 0; i--) {
         var child = list[i];
-        if (i < list.length - 1)
-            child.$nextSibling = getEntry(list[i + 1]);
+        if (i < list.length - 1){
+            //console.log(fullID(child)+'>>'+fullID(list[i + 1]));
+            nextSibling[fullID(child)] = getEntry(list[i + 1]);
+        }
     }
+
+
 }
 
 function getEntry(astNode) {
@@ -269,11 +305,14 @@ function getEntry(astNode) {
         case 'ForStatement':
         case 'FunctionDeclaration':
         case 'IfStatement':
+        case 'ReturnStatement':
         case 'SwitchStatement':
         case 'EmptyStatement':
         case 'WhileStatement':
         case 'ExpressionStatement':
-            return astNode.$entry || getSuccessor(astNode);
+            var result = nodeEntries[fullID(astNode)] || getSuccessor(astNode);
+            //console.log('result:'+result);
+            return result;
 //        case 'TryStatement':
 //            return getEntry(astNode.block);
 
@@ -343,11 +382,17 @@ function getEnclosingFunction(node) {
 
 function getSuccessor(astNode) {
     // part of a block -> it already has a nextSibling
-    if (astNode.$nextSibling)
-        return astNode.$nextSibling;
+    //console.dir('> next sibling '+fullID(astNode))
+    //console.dir(nextSibling[fullID(astNode)])
+    if (nextSibling[fullID(astNode)]) {
+        return nextSibling[fullID(astNode)];
+    }
     var parent = astNode.$parent;
-    if (!parent) // it has no parent -> exitNode
+    if (!parent || parent.type =='FunctionDeclaration' || parent.type == 'FunctionExpression' ) // it has no parent -> exitNode
+    {
         return getExitNode(astNode);
+    }
+
     switch (parent.type) {
         case 'DoWhileStatement':
             return parent.test;
@@ -401,6 +446,9 @@ var scopeNodes = [
     'Program'
 ];
 
+function fullID(node) {
+    return utils.makeId(node.type, node.loc);
+}
 
 function setParent(node) {
     for (var k in node) {
