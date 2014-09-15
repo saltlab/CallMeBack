@@ -1,0 +1,41 @@
+diff --git a/astutil.js b/astutil.js
+index 2c6776a..a10b2ff 100644
+--- a/astutil.js
++++ b/astutil.js
+@@ -96,6 +96,11 @@ define(function (require, exports) {
+         return basename(nd.attr.enclosingFile) + "@" + nd.loc.start.line + ":" + nd.range[0] + "-" + nd.range[1];
+     }
+ 
++    function ppAltPos(nd) {
++        //console.dir(nd);
++        return nd.type+ '-' + nd.loc.start.line + '-' + nd.loc.start.column + '-' + nd.loc.end.line + '-' + nd.loc.end.column;
++    }
++
+     /* Build an AST from a collection of source files. */
+     function buildAST(files) {
+         var sources = files.map(function (file) {
+@@ -126,6 +131,7 @@ define(function (require, exports) {
+     exports.visit = visit;
+     exports.init = init;
+     exports.ppPos = ppPos;
++    exports.ppAltPos = ppAltPos;
+     exports.buildAST = buildAST;
+     return exports;
+ });
+\ No newline at end of file
+diff --git a/main.js b/main.js
+index e997e18..dc98f67 100644
+--- a/main.js
++++ b/main.js
+@@ -106,9 +106,9 @@ if (args.reqJs)
+ if (args.cg) {
+     function pp(v) {
+         if (v.type === 'CalleeVertex')
+-            return astutil.ppPos(v.call);
++            return astutil.ppAltPos(v.call);
+         if (v.type === 'FuncVertex')
+-            return astutil.ppPos(v.func);
++            return astutil.ppAltPos(v.func);
+         if (v.type === 'NativeVertex')
+             return v.name;
+         throw new Error("strange vertex: " + v);
