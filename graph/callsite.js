@@ -58,7 +58,10 @@ function enter(node) {
     }
 
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'Program') {
-        node.$gnode = g.addNode('cluster'+utils.makeId(node.type, node.loc));
+        var newlabel = utils.concoctFunctionName (node);
+        var id = 'cluster'+utils.makeId(node.type,node.loc);
+
+        node.$gnode = g.addNode(id,{ label: newlabel });
         var exitid = g.addNode(utils.makeId(node.type, node.loc)+'-exit');
         g.parent(exitid, node.$gnode);
         node.$exitnode = {

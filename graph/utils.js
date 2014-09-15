@@ -29,6 +29,12 @@ function makeLabel(node, src) {
 // uses the surrounding code to generate a reasonable name for a function
 function concoctFunctionName (node) {
     var name = undefined;
+    if (node.$parent){
+        node.parent = node.$parent;
+    }
+    if (node.type === 'Program') {
+        name = 'Program';
+    }
 
     if (node.type === 'FunctionDeclaration') {
         // function xxx() { }
