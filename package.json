@@ -6,21 +6,22 @@
   "version": "0.0.1",
   "repository": {},
   "dependencies": {
-    "falafel": "0.1.4",
-    "falafel-map": "0.3.2",
+    "argparse": "~0.1.15",
     "connect": "2.3.4",
-    "mime": "1.2.4",
-    "http-proxy": "0.8.7",
-    "harmon": "0.2.0",
-    "ws": "0.4.x",
-    "fondue": "0.5.3",
+    "esgraph": "^0.1.1",
     "esprima": "~1.2.2",
     "estraverse": "~1.5.1",
-    "argparse": "~0.1.15",
+    "express": "~4.8.5",
+    "falafel": "0.1.4",
+    "falafel-map": "0.3.2",
+    "fondue": "0.5.3",
     "graphlib": "~0.7.4",
     "graphlib-dot": "~0.4.10",
-    "express": "~4.8.5",
-    "morgan": "~1.2.3"
+    "harmon": "0.2.0",
+    "http-proxy": "0.8.7",
+    "mime": "1.2.4",
+    "morgan": "~1.2.3",
+    "ws": "0.4.x"
   },
   "devDependencies": {
     "tap": "0.4.x"
