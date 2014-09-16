@@ -8,6 +8,7 @@
   "dependencies": {
     "argparse": "~0.1.15",
     "connect": "2.3.4",
+    "escodegen": "^1.4.1",
     "esgraph": "^0.1.1",
     "esprima": "~1.2.2",
     "estraverse": "~1.5.1",

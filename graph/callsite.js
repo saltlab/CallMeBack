@@ -1,5 +1,6 @@
 var fs = require('fs');
 var esprima = require('esprima');
+var escodegen = require('escodegen');
 var estraverse = require('estraverse');
 var filename = process.argv[2];
 //console.log('Processing', filename);
@@ -30,8 +31,8 @@ var falafelMap = require('falafel-map');
 //var walkes = require('walkes');
 var esgraph = require('esgraph');
 
-
 var g = new dot.DotDigraph();
+g.graph({ compound: true });
 
 var scopeChain = [];
 var assignments = [];
@@ -62,7 +63,7 @@ function enter(node) {
         var id = 'cluster'+utils.makeId(node.type,node.loc);
 
         node.$gnode = g.addNode(id,{ label: newlabel });
-        var exitid = g.addNode(utils.makeId(node.type, node.loc)+'-exit');
+        var exitid = g.addNode(utils.makeId(node.type, node.loc)+'-exit', { shape: 'doublecircle', label:'' ,xlabel:'exit'});
         g.parent(exitid, node.$gnode);
         node.$exitnode = {
             start:exitid,
@@ -73,7 +74,7 @@ function enter(node) {
     if (node.type === 'CallExpression' || node.type === 'IfStatement' || node.type === 'DoWhileStatement' ||
         node.type === 'WhileStatement' || node.type === 'ForStatement' || node.type === 'DoWhileStatement' ||
         node.type === 'SwitchStatement' || node.type === 'ReturnStatement') {
-        node.$gnode = g.addNode(utils.makeId(node.type, node.loc));
+        node.$gnode = g.addNode(utils.makeId(node.type, node.loc), { shape: 'circle', label:'' ,xlabel:''});
         g.parent(node.$gnode, getEnclosingFunction(node).$gnode);
 
     }
@@ -109,16 +110,18 @@ functions.concat(ast).forEach(function (a, i) {
             }
         }
         else if (b.type === 'IfStatement') {
-            nodeEntries[fullID(b)] = buildGraphFromExpr(b.test);
+            nodeEntries[fullID(b)] = buildGraphFromExpr(b.test,b);
             if (nodeEntries[fullID(b)]){
                 connectNodes(nodeEntries[fullID(b)].end,b.$gnode);
                 nodeEntries[fullID(b)].end = b.$gnode;
+
+                //parentNode = g.addNode('cluster'+utils.makeId(astXNode.type, astXNode.loc));
+                g.parent(b.$gnode, 'cluster'+utils.makeId(b.type, b.loc));
+
             } else {
                 nodeEntries[fullID(b)].start = b.$gnode;
                 nodeEntries[fullID(b)].end = b.$gnode;
             }
-            //console.log('*********')
-            //console.dir(nodeEntries)
         }
         else if (b.type === 'DoWhileStatement' || b.type === 'WhileStatement') {
 // TODO
@@ -200,9 +203,10 @@ function linkSiblings(node) {
 };
 
 
-function connectNodes(a,b) {
+function connectNodes(a,b,c) {
+
     if (a && b) {
-        return g.addEdge(null, a.toString(), b.toString());
+        return g.addEdge(null, a.toString(), b.toString(),{label:c||''});
     } else {
         return false;
     }
@@ -210,15 +214,18 @@ function connectNodes(a,b) {
 
 function connectNext(a) {
    if(nodeEntries[fullID(a)]) {
-       g.addEdge(null, nodeEntries[fullID(a)].end.toString(), getSuccessor(a).start.toString());
+        //console.dir(a);
+       g.addEdge(null, nodeEntries[fullID(a)].end.toString(), getSuccessor(a).start.toString(),{label:'y'});
    }
 }
 
-function buildGraphFromExpr(astXNode) {
+function buildGraphFromExpr(astXNode,nodeParent) {
  //   console.log("building from " + utils.makeId(astXNode.type, astXNode.loc));
+
     var callExprs = [];
     var start;
     var end;
+    var parentNode;
 
     estraverse.traverse(astXNode, {
         enter: enter,
@@ -241,17 +248,27 @@ function buildGraphFromExpr(astXNode) {
     if(callExprs.length){
         start = callExprs[0].$gnode;
         end = callExprs[0].$gnode;
+        if(nodeParent){
+            parentNode = g.addNode('cluster'+utils.makeId(nodeParent.type, nodeParent.loc),{ label: escodegen.generate(astXNode) });
+            g.parent(parentNode, getEnclosingFunction(astXNode).$gnode);
+        }
     }
 
     for (var i = 0; i < (callExprs.length) - 1; i++) {
 
         var currentNode = callExprs[i];
         var successor = callExprs[i + 1];
+        if(nodeParent){
+            g.parent(currentNode.$gnode, parentNode);
+        }
 
         end = successor.$gnode;
         g.addEdge(null, currentNode.$gnode.toString(), successor.$gnode.toString());
     }
     if (start || end ){
+        if(nodeParent){
+            g.parent(end, parentNode);
+        }
         return {
             start: start,
             end: end
@@ -273,11 +290,11 @@ function reEnter (node) {
     } else if (node.type === 'ReturnStatement') {
         connectNodes(nodeEntries[fullID(node)].end,getExitNode(node).start);
     } else if (node.type === 'IfStatement') {
-        connectNodes(nodeEntries[fullID(node)].end, getEntry(node.consequent).start)
+        connectNodes(nodeEntries[fullID(node)].end, getEntry(node.consequent).start,'T')
         if (node.alternate) {
-            connectNodes(nodeEntries[fullID(node)].end, getEntry(node.alternate).start)
+            connectNodes(nodeEntries[fullID(node)].end, getEntry(node.alternate).start,'F')
         } else {
-            connectNodes(nodeEntries[fullID(node)].end, getSuccessor(node).start)
+            connectNodes(nodeEntries[fullID(node)].end, getSuccessor(node).start,'F')
         }
 
     }
