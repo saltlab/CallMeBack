@@ -76,6 +76,9 @@ function enter(node) {
         node.type === 'SwitchStatement' || node.type === 'ReturnStatement') {
         node.$gnode = g.addNode(utils.makeId(node.type, node.loc), { shape: 'circle', label:'' ,xlabel:''});
         g.parent(node.$gnode, getEnclosingFunction(node).$gnode);
+        if(!getEnclosingFunction(node).$firstChild){
+                    getEnclosingFunction(node).$firstChild = node.$gnode;
+        }
 
     }
 
@@ -215,7 +218,7 @@ function connectNodes(a,b,c) {
 function connectNext(a) {
    if(nodeEntries[fullID(a)]) {
         //console.dir(a);
-       g.addEdge(null, nodeEntries[fullID(a)].end.toString(), getSuccessor(a).start.toString(),{label:'y'});
+       g.addEdge(null, nodeEntries[fullID(a)].end.toString(), getSuccessor(a).start.toString()/*,{label:'y'}*/);
    }
 }
 
@@ -299,6 +302,64 @@ function reEnter (node) {
 
     }
 }
+
+
+var astx = astutil.buildAST([filename]);
+bindings.addBindings(astx);
+var cg = semioptimistic.buildCallGraph(astx);
+
+function pp(v) {
+    if (v.type === 'CalleeVertex')
+        return astutil.ppAltPos(v.call);
+    if (v.type === 'FuncVertex')
+        return astutil.ppAltPos(v.func);
+    if (v.type === 'NativeVertex')
+        return v.name;
+    throw new Error("strange vertex: " + v);
+}
+
+cg.edges.iter(function (call, fn) {
+    //console.log(pp(call) + " -> " + pp(fn));
+    if(g.hasNode(pp(call))){
+        //console.log(" -> E");
+        var RegEx  =  new RegExp(pp(fn));
+        var RegExExit  =  new RegExp('exit');
+        // var checkSet = false
+        g.eachNode(function(u, value) {
+             if (RegEx.test(u) && !RegExExit.test(u)) {
+                //console.dir(nodeEntries)
+                //getEnclosingFunction(node).$firstChild = node.$gnode;
+                // g.addEdge(null, pp(call), u, { color: 'red' });
+             }
+
+        });
+
+        // var RegEx  =  new RegExp(pp(fn));
+        // var checkSet = false;
+        // g.eachNode(function(u, value) {
+        //     if (RegEx.test(u)) {
+        //         var t = g.children(u);
+        //         if(t[0]!=undefined){
+        //             console.log(" -> E");
+        //             g.addEdge(null, g.source(pp(call)), t[0], { color: 'red' });
+        //         }
+        //         else {
+        //             console.log(" -> NA");
+        //             var newnode =  g.addNode(null,{ shape: 'point' });
+        //             g.parent(newnode, u);
+        //             g.addEdge(null, g.source(pp(call)),newnode, { color: 'red' });
+        //         }
+        //         checkSet = true;
+        //     }
+        // });
+        // if (!checkSet & pp(fn)!='Math_log'){
+        //     g.addNode(pp(fn),{ shape: 'point' });
+        //     g.parent(pp(fn), 'clustersys');
+        //     g.addEdge(null, g.source(pp(call)),pp(fn), { color: 'red', label:pp(fn) });
+        //     checkSet = true;
+        // }
+    }
+});
 
 console.log(dot.write(g));
 
