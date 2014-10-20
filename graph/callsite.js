@@ -63,6 +63,12 @@ function enter(node) {
         var id = 'cluster'+utils.makeId(node.type,node.loc);
 
         node.$gnode = g.addNode(id,{ label: newlabel });
+        var startid = g.addNode(utils.makeId(node.type, node.loc)+'-start', { shape: 'circle', label:'' ,xlabel:'start'});
+        g.parent(startid, node.$gnode);
+        node.$startnode = {
+            start:startid,
+            end:startid
+        }
         var exitid = g.addNode(utils.makeId(node.type, node.loc)+'-exit', { shape: 'doublecircle', label:'' ,xlabel:'exit'});
         g.parent(exitid, node.$gnode);
         node.$exitnode = {
@@ -74,10 +80,16 @@ function enter(node) {
     if (node.type === 'CallExpression' || node.type === 'IfStatement' || node.type === 'DoWhileStatement' ||
         node.type === 'WhileStatement' || node.type === 'ForStatement' || node.type === 'DoWhileStatement' ||
         node.type === 'SwitchStatement' || node.type === 'ReturnStatement') {
-        node.$gnode = g.addNode(utils.makeId(node.type, node.loc), { shape: 'circle', label:'' ,xlabel:''});
+        var newclabel;
+        if(node.type === 'CallExpression'){
+            newclabel = node.callee.name;
+        }
+        node.$gnode = g.addNode(utils.makeId(node.type, node.loc), { shape: 'box', label:'' ,xlabel:newclabel||''});
         g.parent(node.$gnode, getEnclosingFunction(node).$gnode);
         if(!getEnclosingFunction(node).$firstChild){
                     getEnclosingFunction(node).$firstChild = node.$gnode;
+                    g.addEdge(null, getEnclosingFunction(node).$startnode.end.toString(), node.$gnode);
+
         }
 
     }
@@ -85,7 +97,7 @@ function enter(node) {
 };
 
 functions.concat(ast).forEach(function (a, i) {
-
+    //var count = 0;
     if (!Array.isArray(a.body)) {
         estraverse.traverse(a.body, {
             enter: enter
@@ -101,12 +113,12 @@ functions.concat(ast).forEach(function (a, i) {
 
 
     function enter(b) {
-
+        //console.log(count++);
         if (b.type === 'FunctionExpression' || b.type === 'FunctionDeclaration') {
             this.skip();
         }
 
-        else if (b.type === 'ExpressionStatement') {
+        if (b.type === 'ExpressionStatement') {
             var result = buildGraphFromExpr(b.expression);
             if (result){
                 nodeEntries[fullID(b)] = result;
@@ -315,6 +327,8 @@ function pp(v) {
         return astutil.ppAltPos(v.func);
     if (v.type === 'NativeVertex')
         return v.name;
+    if (v.type === 'ArgumentVertex')
+        return v.node.callee.name;
     throw new Error("strange vertex: " + v);
 }
 
@@ -323,13 +337,14 @@ cg.edges.iter(function (call, fn) {
     if(g.hasNode(pp(call))){
         //console.log(" -> E");
         var RegEx  =  new RegExp(pp(fn));
-        var RegExExit  =  new RegExp('exit');
+        var RegExStart  =  new RegExp('start');
         // var checkSet = false
         g.eachNode(function(u, value) {
-             if (RegEx.test(u) && !RegExExit.test(u)) {
+             if (RegEx.test(u) && RegExStart.test(u)) {
+                // console.log(" -> Y");
                 //console.dir(nodeEntries)
                 //getEnclosingFunction(node).$firstChild = node.$gnode;
-                // g.addEdge(null, pp(call), u, { color: 'red' });
+                g.addEdge(null, pp(call), u, { color: 'red' });
              }
 
         });
@@ -452,6 +467,10 @@ function getJumpTarget(astNode, types) {
 
 function getExitNode(astNode) {
     return getEnclosingFunction(astNode).$exitnode
+}
+
+function getStartNode(astNode) {
+    return getEnclosingFunction(astNode).$startnode
 }
 
 // Returns the function or program immediately enclosing the given node, possibly the node itself.
