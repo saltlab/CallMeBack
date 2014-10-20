@@ -321,20 +321,27 @@ bindings.addBindings(astx);
 var cg = semioptimistic.buildCallGraph(astx);
 
 function pp(v) {
-    if (v.type === 'CalleeVertex')
-        return astutil.ppAltPos(v.call);
-    if (v.type === 'FuncVertex')
+    //console.log(v.type);
+    if (v.type === 'CalleeVertex'){
+       // console.dir(v);
+        return {node:astutil.ppAltPos(v.call), async:false};
+    }
+    if (v.type === 'FuncVertex'){
         return astutil.ppAltPos(v.func);
-    if (v.type === 'NativeVertex')
+    }
+    if (v.type === 'NativeVertex'){
         return v.name;
-    if (v.type === 'ArgumentVertex')
-        return v.node.callee.name;
+    }
+    if (v.type === 'ArgumentVertex') {
+        //console.dir(v);
+        return {node:astutil.ppAltPos(v.node), async:true};
+    }
     throw new Error("strange vertex: " + v);
 }
 
 cg.edges.iter(function (call, fn) {
     //console.log(pp(call) + " -> " + pp(fn));
-    if(g.hasNode(pp(call))){
+    if(g.hasNode(pp(call).node)){
         //console.log(" -> E");
         var RegEx  =  new RegExp(pp(fn));
         var RegExStart  =  new RegExp('start');
@@ -344,7 +351,11 @@ cg.edges.iter(function (call, fn) {
                 // console.log(" -> Y");
                 //console.dir(nodeEntries)
                 //getEnclosingFunction(node).$firstChild = node.$gnode;
-                g.addEdge(null, pp(call), u, { color: 'red' });
+                if(pp(call).async) {
+                    g.addEdge(null, pp(call).node, u, { color: 'blue' });
+                } else {
+                    g.addEdge(null, pp(call).node, u, { color: 'red' });
+                }
              }
 
         });
