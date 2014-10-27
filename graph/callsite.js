@@ -37,6 +37,8 @@ g.graph({ compound: true });
 var scopeChain = [];
 var assignments = [];
 var blockChain = [];
+var calls = [];
+var funcs = {};
 
 var successorMap = {};
 
@@ -60,6 +62,7 @@ function enter(node) {
 
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'Program') {
         var newlabel = utils.concoctFunctionName (node);
+        funcs[utils.makeId(node.type,node.loc)] = newlabel;
         var id = 'cluster'+utils.makeId(node.type,node.loc);
 
         node.$gnode = g.addNode(id,{ label: newlabel });
@@ -82,6 +85,7 @@ function enter(node) {
         node.type === 'SwitchStatement' || node.type === 'ReturnStatement') {
         var newclabel;
         if(node.type === 'CallExpression'){
+            calls.push(node);
             newclabel = node.callee.name;
         }
         node.$gnode = g.addNode(utils.makeId(node.type, node.loc), { shape: 'box', label:'' ,xlabel:newclabel||''});
@@ -134,6 +138,7 @@ functions.concat(ast).forEach(function (a, i) {
                 g.parent(b.$gnode, 'cluster'+utils.makeId(b.type, b.loc));
 
             } else {
+                nodeEntries[fullID(b)] = {};
                 nodeEntries[fullID(b)].start = b.$gnode;
                 nodeEntries[fullID(b)].end = b.$gnode;
             }
@@ -583,6 +588,92 @@ function setParent(node) {
                     val[i].$parent = node;
                 }
             }
+        }
+    }
+}
+
+function hasColor(path,color){
+   // console.dir(path)
+    for (var p in path){
+        if(path[p] && path[p-1]) {
+            var node_color = g._edges[g.outEdges(path[p], path[p - 1])[0]].value.color;
+            if (node_color){
+                return (node_color == color);
+            }
+        }
+    }
+}
+
+function reachablePaths(g,u,v,path,paths){
+
+    path.push(v);
+
+    var w = g.predecessors(v);
+    for (var x in w){
+        var cloned_path = path.slice();
+
+        if(u==w[x]){
+            cloned_path.push(u);
+            paths.push(cloned_path);
+            return;
+        }
+        reachablePaths(g,u,w[x],cloned_path,paths);
+    }
+    return;
+}
+
+for (var i in g._nodes){
+    if((/^If/).test(i)){
+        var candidate_paths=[];
+        for (var j in g._nodes){
+            if((/^Function/).test(j) && (/start$/).test(j)){
+                reachablePaths(g,i,j,[],candidate_paths);
+            }
+        }
+
+        for (key in candidate_paths){
+            for (var k=0; k<key;k++){
+                var a = candidate_paths[key];
+                var b = candidate_paths[k];
+                var a_color = g._edges[g.outEdges(a[1],a[0])[0]].value.color;
+                var b_color = g._edges[g.outEdges(b[1],b[0])[0]].value.color;
+               if((a[1] != b[1]) && (a_color != b_color)){
+                    console.log('z:'+a[1]+' : '+b[1]);
+                } else if ((hasColor(a,'blue') && hasColor(b,'red')) || (hasColor(a,'red') && hasColor(b,'blue'))){
+                   console.log('z:'+a[1]+' : '+b[1]);
+               }
+            }
+        }
+    }
+}
+
+for (f in funcs){
+    var mcb_pot=[];
+    //console.dir (funcs[f]);
+    for(c in calls){
+        for (a in calls[c].arguments){
+            if (calls[c].arguments[a].type == 'Identifier' && calls[c].arguments[a].name == funcs[f]){
+                //console.log(f+':::'+calls[c].$gnode)
+                reachablePaths(g,calls[c].$gnode,f+'-start',[],mcb_pot);
+            }
+
+        }
+
+    }
+
+    for (i in mcb_pot){
+
+        for (var j=2; j<(mcb_pot[i].length-2);j++)
+        {
+           var pot_mcb_call = mcb_pot[i][j]
+            if((/^CallExpression/).test(pot_mcb_call)){
+                var checked=[];
+                reachablePaths(g,pot_mcb_call,f+'-start',[],checked);
+                if(checked.length!=0 && checked[0][checked[0].length-2] != mcb_pot[i][j-1]){
+                    console.log('mcb!'+checked[0][checked[0].length-1]+'::'+mcb_pot[i][1])
+                }
+            }
+
         }
     }
 }
