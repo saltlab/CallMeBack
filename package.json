@@ -6,7 +6,7 @@
   "version": "0.0.1",
   "repository": {},
   "dependencies": {
-
+    "json2csv": "~2.2.1"
   },
   "devDependencies": {
     "tap": "0.4.x"
