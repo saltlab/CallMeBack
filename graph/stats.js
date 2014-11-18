@@ -57,6 +57,10 @@ var analyze = function(path, fullres,project) {
     var setImmediates=0;
     var calls=0;
     var nextTicks =0;
+    var requires=0;
+    var defines=0;
+    var fsSyncs=0;
+    var fsAsyncs=0;
     var argscount=Array.apply(null, new Array(11)).map(Number.prototype.valueOf,0);
     var paramscount=Array.apply(null, new Array(11)).map(Number.prototype.valueOf,0);
     var argsmax=0;
@@ -124,6 +128,12 @@ var analyze = function(path, fullres,project) {
                 if(node.callee.type == 'Identifier'){
                     var id = node.callee.name;
                     switch (id) {
+                        case 'require':
+                            requires++;
+                            break;
+                        case 'define':
+                            defines++;
+                            break;
                         case 'setTimeout':
                             setTimeouts++;
                             break;
@@ -139,6 +149,26 @@ var analyze = function(path, fullres,project) {
                 } else if(node.callee.type == 'MemberExpression'){
                     if (node.callee.property.type === 'Identifier' && node.callee.object.type === 'Identifier') {
                         var id = node.callee.object.name+'.'+node.callee.property.name;
+                        if(node.callee.object.name=='fs'){
+                            if ((/Sync$/).test(node.callee.property.name)){
+                                fsSyncs++;
+                            } else {
+                                fsAsyncs++;
+                            }
+                        }
+                        //console.log(id);
+
+
+
+                        function isSystemCall(element, index, array) {
+                            var RegEx  =  new RegExp('^'+element+'$');
+                            return RegEx.test(node.callee.object.name);
+                        }
+
+                        if (['readline', 'net', 'http', 'https', 'tls', 'crypto', 'dgram', 'zlib', 'child_process', 'cluster', 'dns'].some(isSystemCall)) {
+                        //    console.log(id);
+                        }
+
                         switch (id) {
                             case 'process.nextTick':
                                 nextTicks++;
@@ -191,7 +221,27 @@ var analyze = function(path, fullres,project) {
 
         }
         //console.dir(argscount);
-        fullres.push({project:project, path:path,loc:loc,functions:functions, functionDecls:functionDecls, functionExprs:functionExprs, calls:calls, setTimeouts:setTimeouts, setIntervals:setIntervals, setImmediates:setImmediates, nextTicks:nextTicks, argscount:argscount, argsmax:argsmax, paramscount:paramscount, paramsmax:paramsmax});
+        fullres.push({
+            project: project,
+            path: path,
+            loc: loc,
+            functions: functions,
+            functionDecls: functionDecls,
+            functionExprs: functionExprs,
+            calls: calls,
+            requires: requires,
+            defines: defines,
+            fsSyncs: fsSyncs,
+            fsAsyncs: fsAsyncs,
+            setTimeouts: setTimeouts,
+            setIntervals: setIntervals,
+            setImmediates: setImmediates,
+            nextTicks: nextTicks,
+            argscount: argscount,
+            argsmax: argsmax,
+            paramscount: paramscount,
+            paramsmax: paramsmax
+        });
     }
     catch (e) {
          // pass exception object to error handler
