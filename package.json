@@ -6,7 +6,9 @@
   "version": "0.0.1",
   "repository": {},
   "dependencies": {
-    "json2csv": "~2.2.1"
+    "json2csv": "~2.2.1",
+    "cheerio": "~0.17.0",
+    "request": "~2.47.0"
   },
   "devDependencies": {
     "tap": "0.4.x"

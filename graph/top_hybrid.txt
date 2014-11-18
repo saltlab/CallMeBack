@@ -1,0 +1,15 @@
+https://github.com/Strider-CD/strider
+https://github.com/popcorn-official/popcorn-app
+https://github.com/jansmolders86/mediacenterjs
+https://github.com/prawnsalad/KiwiIRC
+https://github.com/slate/slate
+https://github.com/alanshaw/david-www
+https://github.com/badges/shields
+https://github.com/codio/iloveopensource
+https://github.com/nodejitsu/browsenpm.org
+https://github.com/npm/npm-www
+https://github.com/pencilblue/pencilblue
+https://github.com/NodeBB/NodeBB
+https://github.com/TryGhost/Ghost
+https://github.com/chipersoft/mash.li
+https://github.com/keystonejs/keystone

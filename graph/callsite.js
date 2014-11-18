@@ -670,7 +670,7 @@ for (f in funcs){
                 var checked=[];
                 reachablePaths(g,pot_mcb_call,f+'-start',[],checked);
                 if(checked.length!=0 && checked[0][checked[0].length-2] != mcb_pot[i][j-1]){
-                    console.log('mcb!'+checked[0][checked[0].length-1]+'::'+mcb_pot[i][1])
+                 //   console.log('mcb!'+checked[0][checked[0].length-1]+'::'+mcb_pot[i][1])
                 }
             }
 
