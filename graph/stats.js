@@ -7,17 +7,18 @@ var resArray = [];
 var projResArray = [];
 
 var type_flag = process.argv[2];
-
+var homedir = process.env.HOME;
 var parentPath;
 switch (type_flag) {
     case 'hybrid':
-        parentPath='/Users/keheliya/dev/top_hybrid';
+        parentPath='/dev/top_hybrid';
         break;
     case 'npm':
     default:
-        parentPath='/Users/keheliya/dev/top_npm';
+        parentPath='/dev/top_npm';
 }
 
+parentPath=homedir+parentPath;
 
 
 var search = function(dir, fullres,project) {
