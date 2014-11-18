@@ -11,11 +11,11 @@ var type_flag = process.argv[2];
 var parentPath;
 switch (type_flag) {
     case 'hybrid':
-        parentPath='/home/leelabminiopticon/dev/study-hybrid';
+        parentPath='/Users/keheliya/dev/top_hybrid';
         break;
     case 'npm':
     default:
-        parentPath='/home/leelabminiopticon/dev/statdirs';
+        parentPath='/Users/keheliya/dev/top_npm';
 }
 
 
@@ -29,14 +29,19 @@ var search = function(dir, fullres,project) {
 
     for(var s = 0; s < haystack.length; s++) {
         path = dir + '/' + haystack[s];
-        stats = fs.statSync(path);
+        try {
+            stats = fs.statSync(path);
 
-        if(stats.isDirectory()) {
-            search(path,fullres,project);
-        } else if(path.indexOf('node_modules') >= 0 || path.indexOf('plugins') >= 0) {
-           // console.log('Skipping file: ' + path);
-        } else if((/\.js$/).test(path)){
-            analyze(path,fullres,project);
+            if (stats.isDirectory()) {
+                search(path, fullres, project);
+            } else if (path.indexOf('node_modules') >= 0 || path.indexOf('plugins') >= 0) {
+                // console.log('Skipping file: ' + path);
+            } else if ((/\.js$/).test(path)) {
+                analyze(path, fullres, project);
+            }
+        }
+        catch (e){
+            
         }
     }
 };
