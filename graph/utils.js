@@ -67,7 +67,9 @@ function concoctFunctionName (node) {
             }
         } else if (node.parent.type === 'CallExpression') {
             // look, I know this is a regexp, I'm just sick of parsing ASTs
-            if (/\.on$/.test(node.parent.callee.source())) {
+            if (node.parent.callee.type === 'FunctionExpression'){
+                name = 'IIFE';
+            } else if (/\.on$/.test(node.parent.callee.source())) {
                 var args = node.parent.arguments;
                 if (args[0].type === 'Literal' && typeof args[0].value === 'string') {
                     // .on('event', function () { })
