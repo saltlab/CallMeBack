@@ -92,6 +92,7 @@ function enter(node) {
         g.parent(node.$gnode, getEnclosingFunction(node).$gnode);
         if(!getEnclosingFunction(node).$firstChild){
                     getEnclosingFunction(node).$firstChild = node.$gnode;
+         //           console.log("adding edge (func start):"+getEnclosingFunction(node).$startnode.end.toString()+' -->'+ node.$gnode)
                     g.addEdge(null, getEnclosingFunction(node).$startnode.end.toString(), node.$gnode);
 
         }
@@ -127,6 +128,14 @@ functions.concat(ast).forEach(function (a, i) {
             if (result){
                 nodeEntries[fullID(b)] = result;
             }
+        }
+        else if (b.type === 'VariableDeclaration'){//console.log(fullID(node));
+            if(b.declarations[0].init.type==='CallExpression'){
+                nodeEntries[fullID(b)] = {};
+                nodeEntries[fullID(b)].start = b.declarations[0].init.$gnode;
+                nodeEntries[fullID(b)].end = b.declarations[0].init.$gnode;
+
+            };
         }
         else if (b.type === 'IfStatement') {
             nodeEntries[fullID(b)] = buildGraphFromExpr(b.test,b);
@@ -226,6 +235,7 @@ function linkSiblings(node) {
 function connectNodes(a,b,c) {
 
     if (a && b) {
+//        console.log("general connection:"+a.toString()+' -->'+  b.toString())
         return g.addEdge(null, a.toString(), b.toString(),{label:c||''});
     } else {
         return false;
@@ -233,8 +243,10 @@ function connectNodes(a,b,c) {
 }
 
 function connectNext(a) {
+  //  console.log("found:"+nodeEntries[fullID(a)])
    if(nodeEntries[fullID(a)]) {
         //console.dir(a);
+  //     console.log("connect next:"+nodeEntries[fullID(a)].end.toString()+' -->'+  getSuccessor(a).start.toString())
        g.addEdge(null, nodeEntries[fullID(a)].end.toString(), getSuccessor(a).start.toString()/*,{label:'y'}*/);
    }
 }
@@ -302,7 +314,9 @@ estraverse.traverse(ast, {
 });
 
 function reEnter (node) {
+ //   console.log(fullID(node));
     if (node.type === 'ExpressionStatement') {
+//        console.log(fullID(node));
         if(!node.expression.right || node.expression.right.type !== 'FunctionExpression' )
         {
             connectNext(node);
@@ -317,6 +331,8 @@ function reEnter (node) {
             connectNodes(nodeEntries[fullID(node)].end, getSuccessor(node).start,'F')
         }
 
+    } else if (node.type === 'VariableDeclaration'){//console.log(fullID(node));
+        connectNext(node);
     }
 }
 
@@ -345,9 +361,9 @@ function pp(v) {
 }
 
 cg.edges.iter(function (call, fn) {
-    //console.log(pp(call) + " -> " + pp(fn));
+    //console.dir(call);
+    // console.log(pp(call).node + " -> " + pp(fn));
     if(g.hasNode(pp(call).node)){
-        //console.log(" -> E");
         var RegEx  =  new RegExp(pp(fn));
         var RegExStart  =  new RegExp('start');
         // var checkSet = false
@@ -392,7 +408,7 @@ cg.edges.iter(function (call, fn) {
     }
 });
 
-console.log(dot.write(g));
+ console.log(dot.write(g));
 
 function backToFront(list) {
     // link all the children to the next sibling from back to front,
@@ -593,7 +609,6 @@ function setParent(node) {
 }
 
 function hasColor(path,color){
-   // console.dir(path)
     for (var p in path){
         if(path[p] && path[p-1]) {
             var node_color = g._edges[g.outEdges(path[p], path[p - 1])[0]].value.color;
