@@ -2,9 +2,54 @@ var fs = require('fs');
 var esprima = require('esprima');
 var escodegen = require('escodegen');
 var estraverse = require('estraverse');
-var filename = process.argv[2];
-//console.log('Processing', filename);
-var src = fs.readFileSync(filename);
+
+ArgumentParser = require('argparse').ArgumentParser;
+
+var crypto = require('crypto');
+
+var graphlib = require("graphlib");
+var dot = require("graphlib-dot");
+
+var falafel = require('falafel');
+var falafelMap = require('falafel-map');
+
+var esgraph = require('esgraph');
+
+
+var argParser = new ArgumentParser({
+    addHelp: true,
+    description: 'ACFG generator'
+});
+
+argParser.addArgument(
+    [ '-d','--debug' ],
+    { nargs: 0,
+        help: 'print debug information' }
+);
+
+
+
+argParser.addArgument(
+    [ '-s','--strategy' ],
+    { help: 'Should be one of NONE, ONESHOT (default), DEMAND, and FULL '}
+);
+
+
+var r = argParser.parseKnownArgs();
+var args = r[0],
+    files = r[1];
+
+args.strategy = args.strategy || 'ONESHOT';
+if (!args.strategy.match(/^(NONE|ONESHOT|DEMAND|FULL)$/)) {
+    argParser.printHelp();
+    process.exit(-1);
+}
+
+//console.dir(files);
+//console.dir(args.strategy);
+console.dir(args.debug);
+
+var src = fs.readFileSync(files[0]);
 var ast = esprima.parse(src, { tolerant: true, loc: true, range: true });
 
 var utils = require('./utils.js');
@@ -18,18 +63,6 @@ var bindings = require('./javascript-call-graph/bindings'),
     callbackCounter = require('./javascript-call-graph/callbackCounter'),
     requireJsGraph = require('./javascript-call-graph/requireJsGraph');
 
-ArgumentParser = require('argparse').ArgumentParser;
-
-var crypto = require('crypto');
-
-var graphlib = require("graphlib");
-var dot = require("graphlib-dot");
-
-var falafel = require('falafel');
-var falafelMap = require('falafel-map');
-
-//var walkes = require('walkes');
-var esgraph = require('esgraph');
 
 var g = new dot.DotDigraph();
 g.graph({ compound: true });
@@ -102,7 +135,6 @@ function enter(node) {
 };
 
 functions.concat(ast).forEach(function (a, i) {
-    //var count = 0;
     if (!Array.isArray(a.body)) {
         estraverse.traverse(a.body, {
             enter: enter
@@ -118,7 +150,6 @@ functions.concat(ast).forEach(function (a, i) {
 
 
     function enter(b) {
-        //console.log(count++);
         if (b.type === 'FunctionExpression' || b.type === 'FunctionDeclaration') {
             this.skip();
         }
@@ -129,7 +160,7 @@ functions.concat(ast).forEach(function (a, i) {
                 nodeEntries[fullID(b)] = result;
             }
         }
-        else if (b.type === 'VariableDeclaration'){//console.log(fullID(node));
+        else if (b.type === 'VariableDeclaration'){
             if(b.declarations[0].init.type==='CallExpression'){
                 nodeEntries[fullID(b)] = {};
                 nodeEntries[fullID(b)].start = b.declarations[0].init.$gnode;
@@ -337,7 +368,7 @@ function reEnter (node) {
 }
 
 
-var astx = astutil.buildAST([filename]);
+var astx = astutil.buildAST(files);
 bindings.addBindings(astx);
 var cg = semioptimistic.buildCallGraph(astx);
 

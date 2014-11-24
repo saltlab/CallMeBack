@@ -8,7 +8,8 @@
   "dependencies": {
     "json2csv": "~2.2.1",
     "cheerio": "~0.17.0",
-    "request": "~2.47.0"
+    "request": "~2.47.0",
+    "argparse": "~0.1.15"
   },
   "devDependencies": {
     "tap": "0.4.x"
