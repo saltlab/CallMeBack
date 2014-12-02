@@ -8,8 +8,11 @@ https://github.com/badges/shields
 https://github.com/codio/iloveopensource
 https://github.com/nodejitsu/browsenpm.org
 https://github.com/npm/npm-www
+https://github.com/npm/newww
 https://github.com/pencilblue/pencilblue
 https://github.com/NodeBB/NodeBB
 https://github.com/TryGhost/Ghost
 https://github.com/chipersoft/mash.li
 https://github.com/keystonejs/keystone
+https://github.com/emgram769/live4chan
+https://github.com/ericf/open-marriage
