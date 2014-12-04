@@ -2,12 +2,53 @@ var fs = require('fs');
 var json2csv = require('json2csv');
 var estraverse = require('estraverse');
 var esprima = require('esprima');
+ArgumentParser = require('argparse').ArgumentParser;
 
 var resArray = [];
 var projResArray = [];
 var depsArray = [];
 
-var type_flag = process.argv[2];
+
+var argParser = new ArgumentParser({
+    addHelp: true,
+    description: 'ACFG generator'
+});
+
+argParser.addArgument(
+    [ '-d','--debug' ],
+    { nargs: 0,
+        help: 'print debug information' }
+);
+
+argParser.addArgument(
+    [ '-p','--pkgs' ],
+    { nargs: 0,
+        help: 'analyze pkgs as well' }
+);
+
+
+
+argParser.addArgument(
+    [ '-t','--type' ],
+    { help: 'Should be one of npm, hybrid'}
+);
+
+
+var r = argParser.parseKnownArgs();
+var args = r[0],
+    files = r[1];
+
+args.type = args.type;
+if (!args.type.match(/^(npm|hybrid)$/)) {
+    argParser.printHelp();
+    process.exit(-1);
+}
+
+//console.dir(files);
+//console.dir(args.strategy);
+console.dir(args.debug);
+
+var type_flag = args.type;
 var homedir = process.env.HOME;
 var parentPath;
 switch (type_flag) {
@@ -40,8 +81,11 @@ var search = function (dir, fullres, project) {
                 // console.log('Skipping file: ' + path);
             } else if ((/\.js$/).test(path)) {
                 analyze(path, fullres, project);
-            } else if ((/\.json$/).test(path)) {
-                analyzePkg(path, project);
+            } else if ((/package\.json$/).test(path)) {
+                //console.log('dep analyze: ' + path+' : '+project);
+                if (args.pkgs){
+                    analyzePkg(path, project);
+                }
             }
         }
         catch (e) {
@@ -52,7 +96,6 @@ var search = function (dir, fullres, project) {
 
 var analyzePkg = function (path, project) {
     json = JSON.parse(fs.readFileSync(path, 'utf8'))
-    console.dir('-----'+project);
     var a = json.dependencies;
     for (key in a) {
         if (a.hasOwnProperty(key)) {
@@ -373,6 +416,24 @@ for (var i in resArray) {
     });
 }
 
+if (args.pkgs){
+    var resultsArr = []
+    for (var i in depsArray) {
+    var result = depsArray[i];
+    resultsArr.push(i+','+depsArray[i]);
+}
+    var finalstr = resultsArr.join('\n');
+    console.log(finalstr);
+    var output_file = 'pkg_' + type_flag + '.csv'
+    fs.writeFile(output_file, finalstr, function (err) {
+        if (err) throw err;
+        console.log(output_file + ' file saved');
+    });
+
+    }
+
+
+
 json2csv({
     data: resArray,
     fields: Object.keys(resArray[0])
@@ -382,6 +443,5 @@ json2csv({
     fs.writeFile(output_file, csv, function (err) {
         if (err) throw err;
         console.log(output_file + ' file saved');
-        console.dir(depsArray);
     });
 });
