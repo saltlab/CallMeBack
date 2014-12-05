@@ -1,0 +1,7 @@
+https://github.com/gabrielecirulli/2048
+https://github.com/ellisonleao/clumsy-bird
+https://github.com/mozilla/BrowserQuest
+https://github.com/AlexNisnevich/untrusted
+https://github.com/Continuities/adarkroom
+https://github.com/Hextris/hextris
+https://github.com/Q42/0hh1

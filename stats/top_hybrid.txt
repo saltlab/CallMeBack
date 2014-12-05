@@ -1,5 +1,4 @@
 https://github.com/Strider-CD/strider
-https://github.com/popcorn-official/popcorn-app
 https://github.com/jansmolders86/mediacenterjs
 https://github.com/prawnsalad/KiwiIRC
 https://github.com/slate/slate

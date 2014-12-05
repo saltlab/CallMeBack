@@ -1,0 +1,9 @@
+https://github.com/angular/angular.js
+https://github.com/jashkenas/backbone
+https://github.com/emberjs/ember.js
+https://github.com/knockout/knockout
+https://github.com/tastejs/todomvc
+https://github.com/spine/spine
+https://github.com/Polymer/polymer
+https://github.com/mozbrick/brick
+https://github.com/facebook/react
