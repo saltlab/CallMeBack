@@ -15,9 +15,9 @@ var argParser = new ArgumentParser({
 });
 
 argParser.addArgument(
-    [ '-d','--debug' ],
+    [ '-d','--directory' ],
     { nargs: 0,
-        help: 'print debug information' }
+        help: 'give directory path' }
 );
 
 argParser.addArgument(
@@ -39,31 +39,95 @@ var args = r[0],
     files = r[1];
 
 args.type = args.type;
-if (!args.type.match(/^(npm|hybrid)$/)) {
+if (args.type && !args.type.match(/^(npm|hybrid|dataviz|frameworks|engines|games)$/)) {
     argParser.printHelp();
     process.exit(-1);
 }
 
 //console.dir(files);
 //console.dir(args.strategy);
-console.dir(args.debug);
 
-var type_flag = args.type;
-var homedir = process.env.HOME;
-var parentPath;
-switch (type_flag) {
-    case 'hybrid':
-        parentPath = '/dev/top_hybrid';
-        break;
-    case 'npm':
-    default:
-        parentPath = '/dev/top_npm';
+if (args.directory){
+    var dirPath = files[0];
+    var dirResults = [];
+    var stats = fs.statSync(dirPath);
+
+    if (stats.isDirectory()) {
+        search(dirPath, dirResults);
+    }
+    //console.dir(dirResults);
 }
 
-parentPath = homedir + parentPath;
+if (args.type)
+{
+var type_flag = args.type;
+var homedir = process.env.HOME;
+
+var parentPath = homedir + '/dev/top_'+ type_flag;
+
+var dirs = fs.readdirSync(parentPath);
+
+for (var s = 0; s < dirs.length; s++) {
+
+    var path = parentPath + '/' + dirs[s];
+    //console.log(path)
+    var stats = fs.statSync(path);
+
+    if (stats.isDirectory()) {
+        search(path, resArray, dirs[s]);
+    }
+}
+
+//console.dir(resArray);
+
+for (var i in resArray) {
+    var result = resArray[i];
+    Object.keys(result).forEach(function (key) {
+        if (key === 'propertiesCount') {
+            var array = [];
+            result[key].forEach(function (item) {
+                array.push([item.property + ':' + item.count]);
+            });
+            result[key] = array;
+        }
+        result[key] = Array.isArray(result[key]) ? result[key].join(' ') : result[key];
+    });
+}
+
+if (args.pkgs){
+    var resultsArr = []
+    for (var i in depsArray) {
+    var result = depsArray[i];
+    resultsArr.push(i+','+depsArray[i]);
+}
+    var finalstr = resultsArr.join('\n');
+    console.log(finalstr);
+    var output_file = 'pkg_' + type_flag + '.csv'
+    fs.writeFile(output_file, finalstr, function (err) {
+        if (err) throw err;
+        console.log(output_file + ' file saved');
+    });
+
+    }
 
 
-var search = function (dir, fullres, project) {
+
+json2csv({
+    data: resArray,
+    fields: Object.keys(resArray[0])
+}, function (err, csv) {
+    if (err) console.log(err);
+    var output_file = 'file_' + type_flag + '.csv'
+    fs.writeFile(output_file, csv, function (err) {
+        if (err) throw err;
+        console.log(output_file + ' file saved');
+    });
+});
+
+}
+
+
+function search (dir, fullres, project) {
     if (!fs.existsSync(dir)) {
         return console.log('Directory ' + dir + ' does not exist.');
     }
@@ -80,6 +144,7 @@ var search = function (dir, fullres, project) {
             } else if (path.indexOf('node_modules') >= 0 || path.indexOf('plugins') >= 0) {
                 // console.log('Skipping file: ' + path);
             } else if ((/\.js$/).test(path)) {
+                console.log('Analyzing file: ' + path);
                 analyze(path, fullres, project);
             } else if ((/package\.json$/).test(path)) {
                 //console.log('dep analyze: ' + path+' : '+project);
@@ -94,7 +159,7 @@ var search = function (dir, fullres, project) {
     }
 };
 
-var analyzePkg = function (path, project) {
+function analyzePkg (path, project) {
     json = JSON.parse(fs.readFileSync(path, 'utf8'))
     var a = json.dependencies;
     for (key in a) {
@@ -109,7 +174,7 @@ var analyzePkg = function (path, project) {
 
 }
 
-var analyze = function (path, fullres, project) {
+function analyze (path, fullres, project) {
     var loc = 0;
     var functions = 0;
     var functionDecls = 0;
@@ -387,61 +452,3 @@ var analyze = function (path, fullres, project) {
 
 //search(process.argv[2],resArray);
 
-var dirs = fs.readdirSync(parentPath);
-
-for (var s = 0; s < dirs.length; s++) {
-
-    var path = parentPath + '/' + dirs[s];
-    //console.log(path)
-    var stats = fs.statSync(path);
-
-    if (stats.isDirectory()) {
-        search(path, resArray, dirs[s]);
-    }
-}
-
-//console.dir(resArray);
-
-for (var i in resArray) {
-    var result = resArray[i];
-    Object.keys(result).forEach(function (key) {
-        if (key === 'propertiesCount') {
-            var array = [];
-            result[key].forEach(function (item) {
-                array.push([item.property + ':' + item.count]);
-            });
-            result[key] = array;
-        }
-        result[key] = Array.isArray(result[key]) ? result[key].join(' ') : result[key];
-    });
-}
-
-if (args.pkgs){
-    var resultsArr = []
-    for (var i in depsArray) {
-    var result = depsArray[i];
-    resultsArr.push(i+','+depsArray[i]);
-}
-    var finalstr = resultsArr.join('\n');
-    console.log(finalstr);
-    var output_file = 'pkg_' + type_flag + '.csv'
-    fs.writeFile(output_file, finalstr, function (err) {
-        if (err) throw err;
-        console.log(output_file + ' file saved');
-    });
-
-    }
-
-
-
-json2csv({
-    data: resArray,
-    fields: Object.keys(resArray[0])
-}, function (err, csv) {
-    if (err) console.log(err);
-    var output_file = 'file_' + type_flag + '.csv'
-    fs.writeFile(output_file, csv, function (err) {
-        if (err) throw err;
-        console.log(output_file + ' file saved');
-    });
-});
