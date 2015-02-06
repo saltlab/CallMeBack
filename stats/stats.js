@@ -1,12 +1,17 @@
 var fs = require('fs');
 var json2csv = require('json2csv');
 var estraverse = require('estraverse');
+var jshint = require('jshint').JSHINT;
 var esprima = require('esprima');
 ArgumentParser = require('argparse').ArgumentParser;
+
+var async_types = [];
 
 var resArray = [];
 var projResArray = [];
 var depsArray = [];
+
+var errcbcount=0;
 
 
 var argParser = new ArgumentParser({
@@ -101,7 +106,6 @@ if (args.pkgs){
     resultsArr.push(i+','+depsArray[i]);
 }
     var finalstr = resultsArr.join('\n');
-    console.log(finalstr);
     var output_file = 'pkg_' + type_flag + '.csv'
     fs.writeFile(output_file, finalstr, function (err) {
         if (err) throw err;
@@ -110,7 +114,7 @@ if (args.pkgs){
 
     }
 
-
+console.dir(async_types);
 
 json2csv({
     data: resArray,
@@ -144,7 +148,7 @@ function search (dir, fullres, project) {
             } else if (path.indexOf('node_modules') >= 0 || path.indexOf('plugins') >= 0) {
                 // console.log('Skipping file: ' + path);
             } else if ((/\.js$/).test(path)) {
-                console.log('Analyzing file: ' + path);
+                //console.log('Analyzing file: ' + path);
                 analyze(path, fullres, project);
             } else if ((/package\.json$/).test(path)) {
                 //console.log('dep analyze: ' + path+' : '+project);
@@ -164,6 +168,7 @@ function analyzePkg (path, project) {
     var a = json.dependencies;
     for (key in a) {
         if (a.hasOwnProperty(key)) {
+    //     if ((/async$/).test(key)){console.dir(project+' '+key)}
             if (!depsArray[key]){
                 depsArray[key] = 1;
             } else {
@@ -180,6 +185,10 @@ function analyze (path, fullres, project) {
     var functionDecls = 0;
     var functionExprs = 0;
     var namedFuncExprs = 0;
+    var anonCBs = 0;
+    var minC = 0;
+    var maxC = 0;
+    var meanC = 0;
     var setTimeouts = 0;
     var setIntervals = 0;
     var setImmediates = 0;
@@ -193,7 +202,7 @@ function analyze (path, fullres, project) {
     var paramscount = Array.apply(null, new Array(11)).map(Number.prototype.valueOf, 0);
     var argsmax = 0;
     var paramsmax = 0;
-    //console.log('Analysing.. ' + path);
+    console.log('Analysing.. ' + path);
     var text = fs.readFileSync(path, "utf8");
     text.split(/\r?\n/).forEach(function (line) {
         loc++;
@@ -209,10 +218,30 @@ function analyze (path, fullres, project) {
         estraverse.traverse(ast, {
             enter: enter
         });
+        var compArr=[];
+        jshint(text);
+        var funcs = jshint.data().functions;
+        if (funcs.length) {
+            funcs.forEach(function (entry) {
+                //console.dir(entry.metrics.complexity);
+                compArr.push(entry.metrics.complexity);
+            });
+
+            minC = compArr.reduce(function (p, v) {
+                return ( p < v ? p : v );
+            });
+            maxC = compArr.reduce(function (p, v) {
+                return ( p > v ? p : v );
+            });
+            meanC = compArr.reduce(function (a, b) {
+                return a + b;
+            }, 0) / compArr.length;
+        }
+
     }
     catch (e) {
         // pass exception object to error handler
-        console.dir(e);
+        //console.dir(e);
     }
 
     function enter(node) {
@@ -224,9 +253,13 @@ function analyze (path, fullres, project) {
             // console.dir(node);
             for (i in node.params) {
                 if (node.params[i].type == 'Identifier') {
-                    //  console.log(node.params[i].name);
+                    if (i ==0 && /err/.test(node.params[i].name)) {//console.log(node.params[i].name)
+                    errcbcount++ };
+                } else {
+                    console.log(node.params[i].type);
                 }
             }
+            //console.dir(node.params[0].name);
             if (node.params.length > paramsmax) {
                 paramsmax = node.params.length;
             }
@@ -260,6 +293,8 @@ function analyze (path, fullres, project) {
             for (i in node.arguments) {
                 if (node.arguments[i].type == 'Identifier') {
                     //  console.log(node.arguments[i].name);
+                } else if (node.arguments[i].type == 'FunctionExpression'){
+                    anonCBs++;
                 }
             }
             if (node.callee.type == 'Identifier') {
@@ -292,6 +327,13 @@ function analyze (path, fullres, project) {
                         } else {
                             fsAsyncs++;
                         }
+                    } else if (node.callee.object.name == 'async') {
+                        if (async_types[node.callee.property.name] == 0 | async_types[node.callee.property.name]) {
+                            async_types[node.callee.property.name]++;
+                        } else {
+                            async_types[node.callee.property.name] = 1;
+                        }
+                     //   console.log(node.callee.object.name+'.'+node.callee.property.name);
                     }
                     //console.log(id);
 
@@ -366,6 +408,10 @@ function analyze (path, fullres, project) {
         functionDecls: functionDecls,
         functionExprs: functionExprs,
         namedFuncExprs: namedFuncExprs,
+        anonCBs: anonCBs,
+        minComplexity: minC,
+        maxComplexity: maxC,
+        meanComplexity: meanC,
         calls: calls,
         requires: requires,
         defines: defines,
@@ -383,6 +429,8 @@ function analyze (path, fullres, project) {
 
 
 };
+
+console.log(errcbcount);
 
 //var resArray = [{
 //"published": "2014-03-23T15:54:39.825Z",

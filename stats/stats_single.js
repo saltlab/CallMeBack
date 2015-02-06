@@ -1,7 +1,9 @@
 var fs = require('fs');
 var json2csv = require('json2csv');
 var estraverse = require('estraverse');
+var jshint = require('jshint').JSHINT;
 var esprima = require('esprima');
+var tern = require('tern');
 
 var loc = 0;
 var functions = 0;
@@ -25,20 +27,103 @@ var paramsmax = 0;
 
 var file = process.argv[2];
 
-var src = fs.readFileSync(file);
-var ast = esprima.parse(src, { tolerant: true, loc: true, range: true });
+var src = fs.readFileSync(file,'utf-8');
+var server = new tern.Server({});
+//server.addFile(file);
 
-estraverse.traverse(ast, {
-    enter: enter
+var msg = {
+    "query": {
+        "type": "type",
+        "file": "myfile.js",
+        "end": 440
+    },
+    "files": [
+        {
+            "type": "full",
+            "name": "myfile.js",
+            "text": src
+        }
+    ]
+}
+//server.request(msg, function(err, resp) {
+//    if (err) throw err;
+//    else {console.dir(resp);
+//        //var ast = server.files[0].ast;
+//        //console.dir(ast);
+//        }
+//});
+
+
+
+var ast = esprima.parse(src, { tolerant: true, loc: true, range: true });
+jshint(src+'');
+var funcs = jshint.data().functions;
+funcs.forEach(function(entry) {
+    //console.dir(entry.metrics.complexity);
+  //  console.dir(entry.metrics);
 });
 
+//console.dir(jshint.data());
+
+estraverse.traverse(ast, {
+    enter: enter,
+    leave: leave
+});
+
+function setParent(node) {
+    //console.dir(node);
+    for (var k in node) {
+        if (!node.hasOwnProperty(k))
+            continue;
+        if (k[0] === '$')
+            continue;
+        var val = node[k];
+        if (!val)
+            continue;
+        if (typeof val === "object" && typeof val.type === "string") {
+            node[k].$parent = node;
+        }
+        else if (val instanceof Array) {
+            for (var i=0; i<val.length; i++) {
+                var elm = val[i];
+                if (elm != null && typeof elm === "object" && typeof elm.type === "string") {
+                    val[i].$parent = node;
+                }
+            }
+        }
+    }
+}
+
+function leave(node) {
+
+    if (node.type === 'FunctionExpression' && node.$parent.type === 'CallExpression') {
+
+        console.log(' Real:'+ node.loc.start.line +' - '+ node.loc.end.line);
+
+
+
+    }
+
+
+}
+
 function enter(node) {
+    setParent(node);
+    console.dir(node.range);
     if (node.type === 'VariableDeclarator') {
         //  console.dir(node);
     }
+    if (node.type === 'FunctionExpression' && node.$parent.type === 'CallExpression') {
+        //console.dir(node);
+        console.log('Pushing:'+ node.loc.start.line +' - '+ node.loc.end.line);
+    } else if (node.type === 'Identifier' && node.$parent.type === 'CallExpression') {
+        console.dir(node);
+    }
+
+
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration') {
         functions++;
-        console.dir(node.loc.start.line+'-'+node.loc.start.column+'-'+node.loc.end.line+'-'+node.loc.end.column);
+        //console.dir(node.loc.start.line+'-'+node.loc.start.column+'-'+node.loc.end.line+'-'+node.loc.end.column);
         for (i in node.params) {
             if (node.params[i].type == 'Identifier') {
                 //  console.log(node.params[i].name);
