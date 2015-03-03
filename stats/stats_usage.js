@@ -8,6 +8,7 @@ var tern = require('tern');
 
 var server = new tern.Server({plugins: {node: {}}});
 
+
 var argParser = new ArgumentParser({
     addHelp: true,
     description: 'ACFG generator'
@@ -59,6 +60,8 @@ var potentials = 0;
 var scopeChain = [];
 var other1 = 0;
 var other2 = 0;
+var calls = 0;
+var async_calls = 0;
 
 var bindings = require('../graph/javascript-call-graph/bindings'),
     astutil = require('../graph/javascript-call-graph/astutil'),
@@ -201,16 +204,13 @@ function analyzeEach(path) {
 
         function enter(node) {
             if (node.type === 'CallExpression') {
+                calls++;
                 if (node.callee.type == 'Identifier') {
                     var id = node.callee.name;
                     var range = node.callee.range;
 
                     var location = Math.floor((range[0] + range[1]) / 2);
 
-                    //immediately invoked!
-                    if (isVarParam(id, scopeChain)) {
-                        //console.log('........'+id+' is callback!!!')
-                    }
 
                     var core_bak = ['require', 'define', 'setTimeout', 'detachEvent', 'attachEvent', 'setInterval',
                         'clearInterval', 'clearTimeout', 'setImmediate', 'Number',
@@ -220,10 +220,9 @@ function analyzeEach(path) {
                     var core_functions = ['setTimeout', 'setInterval',
                         'clearInterval', 'clearTimeout', 'setImmediate']
                     if (new RegExp(core_functions.join("|")).test(id)) {
-                        if (node.arguments.length && node.arguments[0].type == 'Identifier' && isVarParam(node.arguments[0].name, scopeChain)) {
-                            //potentials++
-                        }
+                        async_calls++;
                     } else {
+
                         var isInParams = false;
                         var response = {};
 
@@ -239,28 +238,28 @@ function analyzeEach(path) {
                                     "end": location
                                 }
                             }
-                            //server.request(msg, function (err, resp) {
-                            //    if (err) {
-                            //       // console.log(err);
-                            //    }
-                            //    else {
-                            //        //console.log('........' + element.name)
-                            //        //console.dir(resp)
-                            //        //console.dir(node.loc.start.line + ':' + node.loc.start.column + ' : ' + resp.name + ' : ' + resp.type);
-                            //        //console.log('........')
-                            //
-                            //        if (resp.type.indexOf('fn(') !== -1 && isVarParamAlternate(element.name, scopeChain)) {
-                            //            //console.log('........' + element.name)
-                            //            //console.dir(resp)
-                            //            //console.dir(node.loc.start.line + ':' + node.loc.start.column + ' : ' + resp.name + ' : ' + resp.type);
-                            //            //console.log('........')
-                            //            other1++;
-                            //            return true;
-                            //        }
-                            //        return false;
-                            //
-                            //    }
-                            //});
+                            server.request(msg, function (err, resp) {
+                                if (err) {
+                                   // console.log(err);
+                                }
+                                else {
+                                    //console.log('........' + element.name)
+                                    //console.dir(resp)
+                                    //console.dir(node.loc.start.line + ':' + node.loc.start.column + ' : ' + resp.name + ' : ' + resp.type);
+                                    //console.log('........')
+
+                                    if (resp.type.indexOf('fn(') !== -1) {
+                                        //console.log('........' + element.name)
+                                        //console.dir(resp)
+                                        //console.dir(node.loc.start.line + ':' + node.loc.start.column + ' : ' + resp.name + ' : ' + resp.type);
+                                        //console.log('........')
+                                        other1++;
+                                        return true;
+                                    }
+                                    return false;
+
+                                }
+                            });
 
 
                         }
@@ -268,8 +267,9 @@ function analyzeEach(path) {
                         isInParams = node.arguments.some(checkForArgs);
 
                         if (isInParams) {
-                           // console.log(node.loc.start.line + ':' + node.loc.start.column + ':' + node.loc.end.line + ':' + node.loc.end.column + ' : ' + id + ' : ' + path)
+                            // console.log(node.loc.start.line + ':' + node.loc.start.column + ':' + node.loc.end.line + ':' + node.loc.end.column + ' : ' + id + ' : ' + path)
                         }
+
 
                     }
 
@@ -279,42 +279,14 @@ function analyzeEach(path) {
                         var full_id = node.callee.object.name + '.' + node.callee.property.name;
                         //console.log(full_id);
                         if (new RegExp(core_modules.join("|")).test(node.callee.object.name) && !(/Sync$/).test(node.callee.property.name)) {
-                            // console.log('testing ........'+full_id+' detected!!!')
-                            // console.dir(node.arguments[node.arguments.length-1])
-                            //if it's the last parameter of a node core function
-                            if (node.arguments.length && node.arguments[node.arguments.length - 1].type == 'Identifier' && isVarParam(node.arguments[node.arguments.length - 1].name, scopeChain)) {
-                                //console.log('077777777777got it')
-                                //potentials++
-                            }
-
-                        }else if (new RegExp(eventlistener_methods.join("|")).test(node.callee.property.name)){
-                            if (node.arguments.length && node.arguments[1].type == 'Identifier' && isVarParam(node.arguments[1].name, scopeChain)) {
-                            }
-                        }
+                            async_calls++;
+                        } else if (new RegExp(eventlistener_methods.join("|")).test(node.callee.property.name)) {
+                            async_calls++;
+                        } else {
 
                         var range = node.callee.property.range;
                         //console.dir(range)
                         var location = Math.floor((range[0] + range[1]) / 2);
-
-                        var msg = {
-                            "query": {
-                                "type": "type",
-                                "file": path,
-                                "end": location
-                            }
-
-                        }
-                        //server.request(msg, function (err, resp) {
-                        //    if (err) {
-                        //        console.log(err);
-                        //    }
-                        //    else {
-                        //        console.dir(node.loc.start.line + ':' + node.loc.start.column );
-                        //        console.dir(resp)
-                        //
-                        //    }
-                        //});
-
 
                         var isInParams = false;
 
@@ -330,30 +302,31 @@ function analyzeEach(path) {
                                     "end": location
                                 }
                             }
-                            //server.request(msg, function (err, resp) {
-                            //    if (err) {
-                            //       // console.log(err);
-                            //    }
-                            //    else {
-                            //        //console.log('@........' + element.name)
-                            //        //console.dir(resp)
-                            //        //console.dir(node.loc.start.line + ':' + node.loc.start.column + ' : ' + resp.name + ' : ' + resp.type);
-                            //        //console.log('@........')
-                            //
-                            //        if (resp.type.indexOf('fn(') !== -1 && isVarParamAlternate(element.name, scopeChain)) {
-                            //            other2++;
-                            //            return true;
-                            //        }
-                            //        return false;
-                            //
-                            //    }
-                            //});
+                            server.request(msg, function (err, resp) {
+                                if (err) {
+                                    // console.log(err);
+                                }
+                                else {
+                                    //console.log('@........' + element.name)
+                                    //console.dir(resp)
+                                    //console.dir(node.loc.start.line + ':' + node.loc.start.column + ' : ' + resp.name + ' : ' + resp.type);
+                                    //console.log('@........')
+
+                                    if (resp.type.indexOf('fn(') !== -1) {
+                                        other2++;
+                                        return true;
+                                    }
+                                    return false;
+
+                                }
+                            });
                         }
 
                         isInParams = node.arguments.some(logArrayElements);
                         if (isInParams) {
-                          //  console.log(node.loc.start.line + ':' + node.loc.start.column + ':' + node.loc.end.line + ':' + node.loc.end.column + ' : ' + full_id + ' : ' + path)
+                            //  console.log(node.loc.start.line + ':' + node.loc.start.column + ':' + node.loc.end.line + ':' + node.loc.end.column + ' : ' + full_id + ' : ' + path)
                         }
+                    }
 
                     }
                 }
@@ -444,7 +417,8 @@ function summarize(obj) {
             cbfalsecount++
         }
     }
-    console.log(dirPath + ',' + cbtruecount + ',' + cbfalsecount)
+    async_calls += other1+other2
+    console.log(dirPath + ',' + async_calls + ',' + calls)
 }
 
 
