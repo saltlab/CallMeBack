@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Guide for the dataset</title>
+</head>
+<body>
+<div id="preview"><h1>Guide for the dataset</h1>
+    <p>Data records are separated into files according to the category of applications and the property being calculated. Suffix in the file name represent the category.</p>
+    <ul>
+        <li>D (dataviz) - Dataviz</li>
+        <li>E (engines) - Game Engines</li>
+        <li>F (frameworks) - MVC Frameworks</li>
+        <li>G (games) - Games</li>
+        <li>H (hybrid) - Web Applications</li>
+        <li>N (npm) - NPM Modules.</li>
+    </ul>
+    <p>For example <code>callback_defs_dataviz.csv</code> contains results for function definitions accepting callbacks for DataViz category.</p>
+    <h2 id="legend-for-tables">Legend for tables</h2>
+    <ul>
+        <li><p>Function definitions accepting callbacks - Files with prefix <code>callback_defs_</code>.</p>
+            <ul>
+                <li><strong>Field1:</strong> Project name</li>
+                <li><strong>Field2:</strong> No. of function definitions accepting callbacks</li>
+                <li><strong>Field3:</strong> No. of total function definitions</li>
+            </ul>
+        </li>
+        <li><p>Function usages (callsites) accepting callbacks - Files with prefix <code>callback_usage_</code>.</p>
+            <ul>
+                <li><strong>Field1:</strong> Project name</li>
+                <li><strong>Field2:</strong> No. of function callsites accepting callbacks</li>
+                <li><strong>Field3:</strong> No. of total function callsites</li>
+            </ul>
+        </li>
+        <li><p>Function usages with anonymous callbacks - Files with prefix <code>cb_anon_</code>.</p>
+            <ul>
+                <li><strong>Field1:</strong> Project name</li>
+                <li><strong>Field2:</strong> No. of function callsites accepting anonymous callbacks</li>
+            </ul>
+        </li>
+        <li><p>Function usages with asynchronous callbacks - Files with prefix <code>cbasync_callsites_</code>.</p>
+            <ul>
+                <li><strong>Field1:</strong> Project name</li>
+                <li><strong>Field2:</strong> No. of function callsites accepting asynchronous callbacks</li>
+            </ul>
+        </li>
+        <li><p>Function usages with asynchronous callbacks - Files with prefix <code>cbasync_callsites_</code>.</p>
+            <ul>
+                <li><strong>Field1:</strong> Project name</li>
+                <li><strong>Field2:</strong> No. of function callsites accepting asynchronous callbacks</li>
+            </ul>
+        </li>
+        <li><p>Promise creation and Promise usage - Files with prefix <code>promises_</code>.</p>
+            <ul>
+                <li><strong>Field1:</strong> Project name</li>
+                <li><strong>Field2:</strong> No. of instances using Promises</li>
+                <li><strong>Field3:</strong> No. of instances creating Promises</li>
+            </ul>
+        </li>
+        <li><p>General Information about each file - Files with prefix <code>file_</code></p>
+            <ul>
+                <li><strong>Field List:</strong> "project","path","loc","functions","functionDecls","functionExprs","namedFuncExprs","calls","requires","defines","fsSyncs","fsAsyncs","setTimeouts","setIntervals","setImmediates","nextTicks","argscount","argsmax","paramscount","paramsmax"</li>
+            </ul>
+        </li>
+        <li><p>Dependency counts for each application category - Files with prefix <code>pkg_</code>.</p>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
