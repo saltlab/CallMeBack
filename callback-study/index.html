@@ -1493,7 +1493,7 @@
                     happens through known system APIs, which deal with the task queue in common browsers and Node.js
                     environments. Our analysis detects a variety of APIs, including DOM events, network calls,
                     timers, and I/O. Following table lists examples of these asynchronous APIs.</p>
-                
+
                 <table class="table table-striped table-hover ">
                     <thead>
                     <tr>
@@ -1551,6 +1551,19 @@
                     <tr><td>		</td><td>	fs.watch(filename[, options][, listener]) 	</td><td>		</td><td>	✔	</td></tr>
                     <tr><td>		</td><td>	fs.exists(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
                     <tr><td>		</td><td>	fs.access(path[, mode], callback)	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createServer([options][, connectionListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.connect(options[, connectionListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createConnection(options[, connectionListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.connect(port[, host][, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createConnection(port[, host][, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.connect(path[, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createConnection(path[, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.server.listen(port[, host][, backlog][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.server.listen(path[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.server.listen(handle[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.server.listen(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.server.close([callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.server.getConnections(callback)	</td><td>		</td><td>	✔	</td></tr>
                     </tbody>
                 </table>
             </div>
