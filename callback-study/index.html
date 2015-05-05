@@ -33,6 +33,9 @@
                     <a href="#subject-systems">Subject Systems</a>
                 </li>
                 <li>
+                    <a href="#async-apis">Asynchronous APIs</a>
+                </li>
+                <li>
                     <a href="https://github.com/saltlab/CallMeBack">Source Code</a>
                 </li>
             </ul>
@@ -1470,6 +1473,84 @@
                         <td> git://github.com/yeoman/yosay</td>
                     </tr>
 
+                    </tbody>
+                </table>
+            </div>
+            <!-- /example -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="page-header">
+                <!--<h1 id="subject-systems">Subject Systems</h1>-->
+            </div>
+
+            <div>
+                <h2 id="async-apis">Asynchronous APIs</h2>
+
+                <p>A callback passed into a function can be deferred and invoked at a later time. This deferral
+                    happens through known system APIs, which deal with the task queue in common browsers and Node.js
+                    environments. Our analysis detects a variety of APIs, including DOM events, network calls,
+                    timers, and I/O. Following table lists examples of these asynchronous APIs.</p>
+                
+                <table class="table table-striped table-hover ">
+                    <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Metohd</th>
+                        <th>Client</th>
+                        <th>Server</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td>	<b>DOM events</b> 	</td><td>	  addEventListener() 	</td><td>	✔	</td><td>
+                    </td></tr>
+                    <tr><td>		</td><td>	onclick 	</td><td>	✔	</td><td>		</td></tr>
+                    <tr><td>	<b>Network calls</b> 	</td><td>	  XMLHTTPRequest.open()	</td><td>	✔	</td><td>
+                    </td></tr>
+                    <tr><td>	<b>Timers (macro-Task)</b>	</td><td>	  setImmediate()	</td><td>	✔	</td><td>
+                        ✔ </td></tr>
+                    <tr><td>	 	</td><td>	  setTimeout()	</td><td>	✔	</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	  setInterval() 	</td><td>	✔	</td><td>	✔	</td></tr>
+                    <tr><td>	<b>Timers (micro-task)</b> 	</td><td>	  process.nextTick()  	</td><td>
+                    </td><td>	✔	</td></tr>
+                    <tr><td>	<b>I/O</b> 	</td><td>	fs.rename(oldPath, newPath, callback) 	</td><td>
+                    </td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.ftruncate(fd, len, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.truncate(path, len, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.chown(path, uid, gid, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.fchown(fd, uid, gid, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.lchown(path, uid, gid, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.chmod(path, mode, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.fchmod(fd, mode, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.lchmod(path, mode, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.stat(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.lstat(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.fstat(fd, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.link(srcpath, dstpath, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.symlink(srcpath, dstpath[, type], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.readlink(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.realpath(path[, cache], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.unlink(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.rmdir(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.mkdir(path[, mode], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.readdir(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.close(fd, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.open(path, flags[, mode], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.utimes(path, atime, mtime, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.futimes(fd, atime, mtime, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.write(fd, buffer, offset, length[, position], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.write(fd, data[, position[, encoding]], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.read(fd, buffer, offset, length, position, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.readFile(filename[, options], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.writeFile(filename, data[, options], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.appendFile(filename, data[, options], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.watchFile(filename[, options], listener) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.unwatchFile(filename[, listener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.watch(filename[, options][, listener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.exists(path, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	fs.access(path[, mode], callback)	</td><td>		</td><td>	✔	</td></tr>
                     </tbody>
                 </table>
             </div>
