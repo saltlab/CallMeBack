@@ -1498,7 +1498,7 @@
                     <thead>
                     <tr>
                         <th>Category</th>
-                        <th>Metohd</th>
+                        <th>Method</th>
                         <th>Client</th>
                         <th>Server</th>
                     </tr>
@@ -1564,6 +1564,78 @@
                     <tr><td>		</td><td>	net.server.listen(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
                     <tr><td>		</td><td>	net.server.close([callback]) 	</td><td>		</td><td>	✔	</td></tr>
                     <tr><td>		</td><td>	net.server.getConnections(callback)	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	child_process.exec(command[, options], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	child_process.execFile(file[, args][, options][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	child_process.fork(modulePath[, args][, options]) 	</td><td>                   </td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	cluster.disconnect([callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	crypto.pbkdf2(password, salt, iterations, keylen[, digest], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	crypto.randomBytes(size[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	crypto.pseudoRandomBytes(size[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.lookup(hostname[, options], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.lookupService(address, port, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolve(hostname[, rrtype], callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolve4(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolve6(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolveMx(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolveTxt(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolveSrv(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolveSoa(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolveNs(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.resolveCname(hostname, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dns.reverse(ip, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	domain.bind(callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	domain.intercept(callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.createServer([requestListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.Server.listen(port[, hostname][, backlog][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.Server.listen(path[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.Server.listen(handle[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.Server.close([callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.Server.setTimeout(msecs, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.ServerResponse.setTimeout(msecs, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.ServerResponse.write(chunk[, encoding][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.ServerResponse.end([data][, encoding][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.request(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.get(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.ClientRequest.write(chunk[, encoding][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.ClientRequest.end([data][, encoding][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.ClientRequest.setTimeout(timeout[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	http.IncomingMessage.setTimeout(msecs, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.Server.setTimeout(msecs, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.createServer(options[, requestListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.Server.listen(port[, host][, backlog][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.Server.listen(path[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.Server.listen(handle[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.Server.close([callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.request(options, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	https.get(options, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createServer([options][, connectionListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.connect(options[, connectionListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createConnection(options[, connectionListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.connect(port[, host][, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createConnection(port[, host][, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.connect(path[, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.createConnection(path[, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Server.listen(port[, host][, backlog][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Server.listen(path[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Server.listen(handle[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Server.listen(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Server.close([callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Server.getConnections(callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Socket.connect(port[, host][, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Socket.connect(path[, connectListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Socket.write(data[, encoding][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	net.Socket.setTimeout(timeout[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	readline.Interface.question(query, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	tls.createServer(options[, secureConnectionListener]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	tls.connect(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	tls.connect(port[, host][, options][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	tls.Server.listen(port[, host][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	tls.TLSSocket.renegotiate(options, callback) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dgram.createSocket(type[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dgram.createSocket(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dgram.Socket.send(buf, offset, length, port, address[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dgram.Socket.bind(port[, address][, callback]) 	</td><td>		</td><td>	✔	</td></tr>
+                    <tr><td>		</td><td>	dgram.Socket.bind(options[, callback]) 	</td><td>		</td><td>	✔	</td></tr>
                     </tbody>
                 </table>
             </div>
