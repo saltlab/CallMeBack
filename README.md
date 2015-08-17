@@ -3,7 +3,7 @@ CallMeBack
 
 This is a project to measure various features of JavaScript callbacks.
 
-You can find more information on the study that we carried out using this project, see the [study website](http://www.ece.ubc.ca/~kgallaba/callback-study/).
+You can find more information on the study that we carried out using this project, see the [study website](http://salt.ece.ubc.ca/callback-study/).
 
 At the moment you can use the codebase to study a set of particular JavaScript project repositories in our study. See instructions below on how to study another JavaScript project/repository.
 
